@@ -1,0 +1,6 @@
+﻿  Source.cpp
+e:\visual studio projects\graph algorithms\lab1\lab1\source.cpp(37): warning C4018: <: несоответствие типов со знаком и без знака
+e:\visual studio projects\graph algorithms\lab1\lab1\source.cpp(65): warning C4018: <: несоответствие типов со знаком и без знака
+e:\visual studio projects\graph algorithms\lab1\lab1\source.cpp(78): warning C4018: <: несоответствие типов со знаком и без знака
+  Lab1.vcxproj -> E:\Visual Studio Projects\Graph Algorithms\Lab1\Debug\Lab1.exe
+  Lab1.vcxproj -> E:\Visual Studio Projects\Graph Algorithms\Lab1\Debug\Lab1.pdb (Full PDB)
