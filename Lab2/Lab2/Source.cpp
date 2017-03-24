@@ -19,7 +19,6 @@ int N, R1, C1, R2, C2;
 ifstream fin("input.txt");
 ofstream fout("output.txt");
 vector<vector<int>> maze1,maze2;
-vector<vector<int>> g;
 Vertex start;
 
 void create_mazes() {
@@ -52,7 +51,7 @@ void create_mazes() {
 }
 
 bool check_wall(vector<vector<int>>&v,int a1, int b1) {
-	if (a1 >= 0 && a1 < N&&b1>=0 && b1 < N)
+	if (a1 >= 0 && a1 < N&&b1 >= 0 && b1 < N)
 	{
 		if (v[a1][b1] == 1) 
 			return false;
@@ -62,7 +61,7 @@ bool check_wall(vector<vector<int>>&v,int a1, int b1) {
 	return true;
 }
 
-Vertex go_up(Vertex in) {
+Vertex go_up(Vertex &in) {
 	Vertex tempv;
 	tempv = in;
 	if (check_wall(maze1, tempv.x1 - 1, tempv.y1))
@@ -72,7 +71,7 @@ Vertex go_up(Vertex in) {
 	return tempv;
 }
 
-Vertex go_down(Vertex in) {
+Vertex go_down(Vertex &in) {
 	Vertex tempv;
 	tempv = in;
 	if (check_wall(maze1, tempv.x1 + 1, tempv.y1))
@@ -82,7 +81,7 @@ Vertex go_down(Vertex in) {
 	return tempv;
 }
 
-Vertex go_left(Vertex in) {
+Vertex go_left(Vertex &in) {
 	Vertex tempv;
 	tempv = in;
 	if (check_wall(maze1, tempv.x1, tempv.y1 - 1))
@@ -92,7 +91,7 @@ Vertex go_left(Vertex in) {
 	return tempv;
 }
 
-Vertex go_right(Vertex in) {
+Vertex go_right(Vertex &in) {
 	Vertex tempv;
 	tempv = in;
 	if (check_wall(maze1, tempv.x1, tempv.y1 + 1))
@@ -102,7 +101,7 @@ Vertex go_right(Vertex in) {
 	return tempv;
 }
 
-int convert_coord(Vertex ver) {
+int convert_coord(Vertex &ver) {
 	return ver.x1*N*N*N + ver.y1*N*N + ver.x2*N + ver.y2;
 }
 
@@ -160,5 +159,3 @@ int main() {
 	fout.close();
 	return EXIT_SUCCESS;
 }
-
-
