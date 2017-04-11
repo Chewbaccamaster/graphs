@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include <fstream>
 #include <vector>
-#include <queue>
 #include <algorithm>
 
 using namespace std;
@@ -32,10 +31,7 @@ void create_vector()
 				gl[i].push_back(j);
 			g[i].push_back(peak);
 		}
-	}
-
-
-	
+	}	
 }
 
 void dfs(int v) {
@@ -72,25 +68,22 @@ void probability_search() {
 
 	int a, b;
 	path.assign(N, vector <int>(N, 0));
-	for (int i = 0;i < N;++i)
-	{
+	for (int i = 0;i < N;++i) {
 		if (ans[i] == 0)
 			a = i;
 	}
 	int i = a;
 	for (int k = i + 1; k < N; ++k)
 		for (int j = k + 1; j < N; ++j)
-			if (g[i][j] < g[i][k] * g[k][j]) {
+			if (g[i][j] < g[i][k] * g[k][j]){
 				g[i][j] = g[i][k] * g[k][j];
 				path[i][j] = k;
 			}
 }
 
-
 void restore_path() {
 	int a, b;
-	for (int i = 0;i < N;++i)
-	{
+	for (int i = 0;i < N;++i) {
 		if (ans[i] == 0)
 			a = i;
 		if (ans[i] == N - 1)
@@ -98,8 +91,7 @@ void restore_path() {
 	}
 	result.emplace_back(ans[b]);
 		int i = b;
-		while (i)
-		{
+		while (i){
 			if (path[a][i] != 0)
 				result.emplace_back(ans[path[a][i]]);
 			i = path[a][i];
@@ -110,17 +102,16 @@ void restore_path() {
 
 void printresult() {
 	int a, b;
-	for (int i = 0;i < N;++i)
-	{
+	for (int i = 0;i < N;++i) {
 		if (ans[i] == 0)
 			a = i;
 		if (ans[i] == N - 1)
 			b = i;
 	}
-
 	fout << g[a][b] << ' ' << N << endl;
 	for (int i = 0;i < N;++i)
 		fout << result[i] << ' ';
+	fout.close();
 }
 int main() {
  	create_vector();
@@ -128,5 +119,6 @@ int main() {
 	probability_search();
 	restore_path();
 	printresult();
+
 	return EXIT_SUCCESS;
 }
