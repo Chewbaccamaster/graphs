@@ -17,13 +17,12 @@ vector<bool> used;
 void create_vector()
 {
 	fin >> N;
-	g.resize(N*N);
-	used.resize(N*N);
-	ans.resize(N*N);
-	gl.resize(N*N);
-	path.resize(N*N);
+	g.resize(N);
+	gl.resize(N);
+	used.resize(N);
+	ans.resize(N);
+	path.resize(N);
 	for (int i = 0;i < N;++i) {
-		g[i].reserve(N);
 		for (int j = 0;j < N;++j) {
 			double peak;
 			fin >> peak;
@@ -57,6 +56,7 @@ void topological_sort() {
 void modifyGraph()
 {
 	vector<vector<double>> a;
+	a = g;
 
 	for (int i = 0;i < N;++i)
 		for (int j = 0;j < N;++j)
@@ -91,7 +91,7 @@ void restore_path() {
 	}
 	result.emplace_back(ans[b]);
 		int i = b;
-		while (i){
+		while (i!=0){
 			if (path[a][i] != 0)
 				result.emplace_back(ans[path[a][i]]);
 			i = path[a][i];
@@ -108,17 +108,18 @@ void printresult() {
 		if (ans[i] == N - 1)
 			b = i;
 	}
-	fout << g[a][b] << ' ' << N << endl;
-	for (int i = 0;i < N;++i)
+
+	fout << g[a][b] << ' ' << result.size() << endl;
+	for (int i = 0;i < result.size();++i)
 		fout << result[i] << ' ';
 	fout.close();
 }
 int main() {
  	create_vector();
 	topological_sort();
+	modifyGraph();
 	probability_search();
 	restore_path();
 	printresult();
-
 	return EXIT_SUCCESS;
 }
