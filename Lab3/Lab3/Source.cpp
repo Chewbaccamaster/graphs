@@ -11,7 +11,7 @@ ofstream fout("output.txt");
 vector<vector<double>>  g;
 vector <vector<int>> gl, path;
 vector <int> ans, result;
-int N;
+int N, a, b;
 vector<bool> used;
 
 void create_vector()
@@ -44,8 +44,7 @@ void dfs(int v) {
 }
 
 void topological_sort() {
-	for (int i = 0; i < N; ++i)
-		used[i] = false;
+	fill(used.begin(), used.end(), false);
 	ans.clear();
 	for (int i = 0; i < N; ++i)
 		if (!used[i])
@@ -64,14 +63,21 @@ void modifyGraph()
 	g = a;
 }
 
-void probability_search() {
-
-	int a, b;
-	path.assign(N, vector <int>(N, 0));
+void find_oldstart() {
 	for (int i = 0;i < N;++i) {
 		if (ans[i] == 0)
 			a = i;
 	}
+}
+
+void find_oldfinish() {
+	for (int i = 0;i < N;++i) {
+		if (ans[i] == N - 1)
+			b = i;
+	}
+}
+void probability_search() {
+	path.assign(N, vector <int>(N, 0));
 	int i = a;
 	for (int k = i + 1; k < N; ++k)
 		for (int j = k + 1; j < N; ++j)
@@ -82,13 +88,8 @@ void probability_search() {
 }
 
 void restore_path() {
-	int a, b;
-	for (int i = 0;i < N;++i) {
-		if (ans[i] == 0)
-			a = i;
-		if (ans[i] == N - 1)
-			b = i;
-	}
+	
+
 	result.emplace_back(ans[b]);
 		while (b){
 			if (path[a][b] != 0)
@@ -100,13 +101,6 @@ void restore_path() {
 }
 
 void printresult() {
-	int a, b;
-	for (int i = 0;i < N;++i) {
-		if (ans[i] == 0)
-			a = i;
-		if (ans[i] == N - 1)
-			b = i;
-	}
 	fout << g[a][b] << ' ' << result.size() << endl;
 	for (int i = 0;i < result.size();++i)
 		fout << result[i] << ' ';
@@ -114,10 +108,23 @@ void printresult() {
 }
 int main() {
  	create_vector();
+
 	topological_sort();
+
 	modifyGraph();
+
+	find_oldstart();
+
 	probability_search();
+
+	find_oldfinish();
+	
 	restore_path();
+
+	find_oldfinish();
+
 	printresult();
+
+
 	return EXIT_SUCCESS;
 }
