@@ -90,11 +90,10 @@ void restore_path() {
 			b = i;
 	}
 	result.emplace_back(ans[b]);
-		int i = b;
-		while (i!=0){
-			if (path[a][i] != 0)
-				result.emplace_back(ans[path[a][i]]);
-			i = path[a][i];
+		while (b){
+			if (path[a][b] != 0)
+				result.emplace_back(ans[path[a][b]]);
+			b = path[a][b];
 		}
 		result.emplace_back(ans[a]);
 		reverse(result.begin(), result.end());
@@ -108,7 +107,6 @@ void printresult() {
 		if (ans[i] == N - 1)
 			b = i;
 	}
-
 	fout << g[a][b] << ' ' << result.size() << endl;
 	for (int i = 0;i < result.size();++i)
 		fout << result[i] << ' ';

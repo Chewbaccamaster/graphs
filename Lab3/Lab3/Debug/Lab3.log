@@ -1,5 +1,5 @@
 ﻿  Source.cpp
 e:\git\graphs\lab3\lab3\source.cpp(69): warning C4101: b: неиспользованная локальная переменная
-e:\git\graphs\lab3\lab3\source.cpp(113): warning C4018: <: несоответствие типов со знаком и без знака
+e:\git\graphs\lab3\lab3\source.cpp(112): warning C4018: <: несоответствие типов со знаком и без знака
   Lab3.vcxproj -> E:\Git\graphs\Lab3\Debug\Lab3.exe
   Lab3.vcxproj -> E:\Git\graphs\Lab3\Debug\Lab3.pdb (Full PDB)
