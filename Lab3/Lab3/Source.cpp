@@ -9,19 +9,19 @@ using namespace std;
 ifstream fin("input.txt");
 ofstream fout("output.txt");
 vector<vector<double>>  g;
-vector <vector<int>> gl, path;
-vector <int> ans, result;
+vector <vector<int>> gl;
+vector <int> ans, result, path;
 int N, a, b;
 vector<bool> used;
 
-void create_vector()
-{
+void create_vector() {
 	fin >> N;
 	g.resize(N);
 	gl.resize(N);
-	used.resize(N);
+	used.resize(N, false);
 	ans.resize(N);
 	path.resize(N);
+
 	for (int i = 0;i < N;++i) {
 		for (int j = 0;j < N;++j) {
 			double peak;
@@ -44,7 +44,7 @@ void dfs(int v) {
 }
 
 void topological_sort() {
-	fill(used.begin(), used.end(), false);
+	
 	ans.clear();
 	for (int i = 0; i < N; ++i)
 		if (!used[i])
@@ -52,60 +52,55 @@ void topological_sort() {
 	reverse(ans.begin(), ans.end());
 }
 
-void modifyGraph()
-{
-	vector<vector<double>> a;
-	a = g;
+void modifyGraph() {
+	vector<vector<double>> tempv;
+	tempv = g;
 
 	for (int i = 0;i < N;++i)
 		for (int j = 0;j < N;++j)
-			a[i][j] = g[ans[i]][ans[j]];
-	g = a;
+			tempv[i][j] = g[ans[i]][ans[j]];
+	g = tempv;
 }
 
-void find_oldstart() {
+void find_oldnum() {
 	for (int i = 0;i < N;++i) {
 		if (ans[i] == 0)
 			a = i;
-	}
-}
-
-void find_oldfinish() {
-	for (int i = 0;i < N;++i) {
 		if (ans[i] == N - 1)
 			b = i;
 	}
 }
+
 void probability_search() {
-	path.assign(N, vector <int>(N, 0));
+	path.assign(N, 0);
 	int i = a;
 	for (int k = i + 1; k < N; ++k)
 		for (int j = k + 1; j < N; ++j)
 			if (g[i][j] < g[i][k] * g[k][j]){
 				g[i][j] = g[i][k] * g[k][j];
-				path[i][j] = k;
+				path[j] = k;
 			}
 }
 
 void restore_path() {
-	
-
 	result.emplace_back(ans[b]);
-		while (b){
-			if (path[a][b] != 0)
-				result.emplace_back(ans[path[a][b]]);
-			b = path[a][b];
+	int x = b;
+		while (x){
+			if (path[x] != 0)
+				result.emplace_back(ans[path[x]]);
+			x = path[x];
 		}
 		result.emplace_back(ans[a]);
-		reverse(result.begin(), result.end());
 }
 
 void printresult() {
-	fout << g[a][b] << ' ' << result.size() << endl;
-	for (int i = 0;i < result.size();++i)
-		fout << result[i] << ' ';
+	int n = result.size();
+	fout << g[a][b] << ' ' << n << endl;
+	for (int i = 0;i < n;++i)
+		fout << result[n-i-1] << ' ';
 	fout.close();
 }
+
 int main() {
  	create_vector();
 
@@ -113,18 +108,13 @@ int main() {
 
 	modifyGraph();
 
-	find_oldstart();
+	find_oldnum();
 
 	probability_search();
-
-	find_oldfinish();
 	
 	restore_path();
 
-	find_oldfinish();
-
 	printresult();
-
 
 	return EXIT_SUCCESS;
 }
