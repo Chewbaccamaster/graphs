@@ -154,7 +154,7 @@ void kruskal(vector <pair<int, pair<int, int>>> &adjG, const int cnt, int &c)
 		
 	for (int i = 0; i < m; ++i) {
 		int a = g[i].second.first, b = g[i].second.second, l = g[i].first;
-		if (dsu_get(a) == dsu_get(b))
+		if (dsu_get(a) != dsu_get(b))
 			if (l == 0) {
 				fout << -1 << endl;
 				fout.close();
@@ -165,8 +165,6 @@ void kruskal(vector <pair<int, pair<int, int>>> &adjG, const int cnt, int &c)
 				continue;
 		}
 			dsu_unite(a, b);
-			
-		
 	}
 	c = cost;	
 }
