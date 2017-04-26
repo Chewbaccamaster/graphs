@@ -69,18 +69,13 @@ int count_cost(vector<Word> &vec1, vector<Word> &vec2)
 	}
 	return a;
 }
-// hor:  1 0 5
-// ver:  0 5 1
 
 void find_intersections(vector<Word> &h, vector<Word> &v, const int N1, const int N2, int &cnt)
 {
 	
 	for (int i = 0; i < N1;++i)
-		for (int j = 0;j < N2;++j)
-		{
-			if (h[i].r >= v[j].c1 && h[i].r <= v[j].c2 && v[j].r)
-
-				{		
+		for (int j = 0;j < N2;++j) {
+			if (h[i].r >= v[j].c1 && h[i].r <= v[j].c2 && v[j].r){		
 					h[i].intersec.emplace_back(v[j].r);
 					v[j].intersec.emplace_back(h[i].r);
 					cnt += 1;
@@ -154,16 +149,16 @@ void kruskal(vector <pair<int, pair<int, int>>> &adjG, const int cnt, int &c)
 		
 	for (int i = 0; i < m; ++i) {
 		int a = g[i].second.first, b = g[i].second.second, l = g[i].first;
-		if (dsu_get(a) != dsu_get(b))
+		if (dsu_get(a) == dsu_get(b))
 			if (l == 0) {
 				fout << -1 << endl;
 				fout.close();
 				return;
-			}
+			}	
 			else {
 				cost += l;
 				continue;
-		}
+			}
 			dsu_unite(a, b);
 	}
 	c = cost;	
