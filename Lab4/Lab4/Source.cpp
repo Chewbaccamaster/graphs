@@ -186,29 +186,31 @@ void dsu_unite(int a, int b) {
 void kruskal(vector <pair<int, pair<int, int>>> &adjG, const int cnt, int &c, const int lnum)
 {
 	int cost = 0, n = lnum, m = adjG.size();
-	sort(adjG.begin(), adjG.end());
+	sort(adjG.begin(), adjG.end(), [](auto& t1, auto& t2) {
+		return (t1.second < t2.second);
+	});
 	p.resize(n);
-	rang.resize(n,0);
+	rang.resize(n, 0);
 
-	for (int i = 0; i < n; ++i) 
+	for (int i = 0; i < n; ++i)
 		p[i] = i;
-		
+
 	for (int i = 0; i < m; ++i) {
 		int a = g[i].second.first, b = g[i].second.second, l = g[i].first;
-		
-		if (dsu_get(a) == dsu_get(b))
+		if (dsu_get(a) == dsu_get(b)) {
 			if (l == 0) {
 				fout << -1 << endl;
 				fout.close();
 				return;
-			}	
-			else {
-				cost += l;
-				continue;
 			}
+		}
+		else {
 			dsu_unite(a, b);
+			cost += l;
+			continue;
+		}
 	}
-	c = cost;	
+	c = cost;
 }
 
 
