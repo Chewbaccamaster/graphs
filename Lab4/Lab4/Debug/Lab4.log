@@ -1,7 +1,11 @@
 ﻿  Source.cpp
 e:\git\graphs\lab4\lab4\source.cpp(62): warning C4018: <: несоответствие типов со знаком и без знака
 e:\git\graphs\lab4\lab4\source.cpp(66): warning C4018: <: несоответствие типов со знаком и без знака
-e:\git\graphs\lab4\lab4\source.cpp(94): warning C4018: <: несоответствие типов со знаком и без знака
-e:\git\graphs\lab4\lab4\source.cpp(109): warning C4018: <: несоответствие типов со знаком и без знака
+e:\git\graphs\lab4\lab4\source.cpp(90): warning C4018: <: несоответствие типов со знаком и без знака
+e:\git\graphs\lab4\lab4\source.cpp(93): warning C4018: <: несоответствие типов со знаком и без знака
+e:\git\graphs\lab4\lab4\source.cpp(114): warning C4018: <: несоответствие типов со знаком и без знака
+e:\git\graphs\lab4\lab4\source.cpp(116): warning C4018: <: несоответствие типов со знаком и без знака
+e:\git\graphs\lab4\lab4\source.cpp(129): warning C4018: <: несоответствие типов со знаком и без знака
+e:\git\graphs\lab4\lab4\source.cpp(131): warning C4018: <: несоответствие типов со знаком и без знака
   Lab4.vcxproj -> E:\Git\graphs\Lab4\Debug\Lab4.exe
   Lab4.vcxproj -> E:\Git\graphs\Lab4\Debug\Lab4.pdb (Full PDB)

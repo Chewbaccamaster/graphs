@@ -45,9 +45,9 @@ void create_vector(vector<Word> &vec1, vector<Word> &vec2) {
 		fin >> a >> b >> c; // r1 r2 c	 0 5 1
 
 							// r1 r2 c   0 5 3
-		temp.r = c; 
-		temp.c1 = a;
-		temp.c2 = b; 
+		temp.r = c; // r <- c
+		temp.c1 = a; // c1 <- r1
+		temp.c2 = b;  // c2 <- r2
 		temp.cost = b - a + 1;
 		temp.intersec.resize(0);
 
@@ -70,49 +70,72 @@ int count_cost(vector<Word> &vec1, vector<Word> &vec2)
 	return a;
 }
 
+void sort_words(vector<Word> &vec1) {
+	sort(vec1.begin(), vec1.end(), [](const Word &v1, const Word &v2) -> bool {
+		int r1 = v1.c1;
+		int r2 = v2.c1;
+		return r1 < r2;
+	});
+}
+// hor: 1  0  5
+    //  r  c1  c2
+  //    fix a  b
+
+//  ver:  0   5   1
+//       r1  r2  c 
+//       a    b  fix
+//if (GV[j].a <= GH[i].fix && GH[i].fix <= GV[j].b && GH[i].a <= GV[j].fix && GV[j].fix <= GH[i].b)
+
+void sort_intersec(vector<Word> &h, vector<Word> &v) {
+	for (int i = 0;i < h.size();++i)
+		sort(h[i].intersec.begin(), h[i].intersec.end());
+
+	for (int i = 0;i < v.size();++i)
+		sort(v[i].intersec.begin(), v[i].intersec.end());
+}
 void find_intersections(vector<Word> &h, vector<Word> &v, const int N1, const int N2, int &cnt)
 {
-	
-	for (int i = 0; i < N1;++i)
+	for (int i = 0; i < N1;++i) 
 		for (int j = 0;j < N2;++j) {
-			if (h[i].r >= v[j].c1 && h[i].r <= v[j].c2 && v[j].r){		
-					h[i].intersec.emplace_back(v[j].r);
-					v[j].intersec.emplace_back(h[i].r);
-					cnt += 1;
-				}	
+			if (v[j].c1 <= h[i].r && h[i].r <= v[j].c2 && h[i].c1 <= v[j].r && v[j].r <= h[i].c2) {
+				h[i].intersec.emplace_back(v[j].r);
+				v[j].intersec.emplace_back(h[i].r);
+				cnt += 1;
+			}
 		}
-
+	
 	
 }
 
-void create_graph(vector<Word> &h, vector<Word> &v, const int N1, const int N2,vector <pair<int, pair<int, int>>> &adjG)
+void create_graph(vector<Word> &h, vector<Word> &v, vector <pair<int, pair<int, int>>> &adjG)
 {
 
 	int a = 0, b = 1;
-	for (int i = 0;i < N1;++i){
+	for (int i = 0;i < h.size();++i){
 		if (h[i].intersec.size() > 0)
-		for (int j = 0;j < h[i].intersec.size() - 1;++j) {
-			pair<int, pair<int, int>> p;
-			
-			p.second.first = a+j;
-			p.second.second = b;
-			p.first = abs(h[i].intersec[j + 1] - h[i].intersec[j] - 1);
-			adjG.emplace_back(p);
-			a += 2;
-			b += 2;
-		}
+			for (int j = 0;j < h[i].intersec.size() - 1;++j) {
+				pair<int, pair<int, int>> p;
+
+				p.second.first = a;
+				p.second.second = b;
+				p.first = abs(h[i].intersec[j + 1] - h[i].intersec[j] - 1);
+				adjG.emplace_back(p);
+				a += 2;
+				b += 2;
+			}	
 	}
 
 
-	for (int i = 0;i < N2;++i) {
+	for (int i = 0;i < v.size();++i) {
 		if (v[i].intersec.size() > 0)
-		for (int j = 0;j < v[i].intersec.size() - 1;++j) {
-			pair<int, pair<int, int>> p;
-			p.second.first = i+j;	
-			p.second.second = i + h[i].intersec.size();
-			p.first = abs(v[i].intersec[j + 1] - v[i].intersec[j]-1);
-			adjG.emplace_back(p);
-		}
+			for (int j = 0;j < v[i].intersec.size() - 1;++j) {
+				pair<int, pair<int, int>> p;
+				p.second.first = i + j;
+				p.second.second = i + h[i].intersec.size();
+				p.first = abs(v[i].intersec[j + 1] - v[i].intersec[j] - 1);
+				adjG.emplace_back(p);
+			}
+		
 	}
 	
 }
@@ -216,13 +239,21 @@ int main() {
 
 	create_vector(hor, ver);
 
+	sort_words(hor);
+
+	sort_words(ver);
+
+	Wprice = count_cost(hor, ver);
+
 	find_intersections(hor, ver, H, V,vertexnum);
 
-	create_graph(hor, ver, H, V, g);
+	sort_intersec(hor, ver);
+
+	create_graph(hor, ver, g);
 //	kruskal1(g, vertexnum, Kprice);
 	kruskal(g, vertexnum, Kprice);
 
-	Wprice = count_cost(hor, ver);
+	
 
 	print_result(Wprice, Kprice, vertexnum);
 
