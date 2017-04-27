@@ -3,7 +3,7 @@
 #include <fstream>
 #include <vector>
 #include <algorithm>
-
+#include <map>
 using namespace std;
 
 ifstream fin("input.txt");
@@ -48,7 +48,7 @@ void create_vector(vector<Word> &vec1, vector<Word> &vec2) {
 		temp.r = c; // r <- c
 		temp.c1 = a; // c1 <- r1
 		temp.c2 = b;  // c2 <- r2
-		temp.cost = b - a + 1;
+		temp.cost = abs(b - a + 1);
 		temp.intersec.resize(0);
 
 		vec2.emplace_back(temp);
@@ -56,15 +56,12 @@ void create_vector(vector<Word> &vec1, vector<Word> &vec2) {
 		
 }
 
-int count_cost(vector<Word> &vec1, vector<Word> &vec2)
-{
+int count_cost(vector<Word> &vec1, vector<Word> &vec2) {
 	int a = 0;
-	for (int i = 0;i < vec1.size();++i)
-	{
+	for (int i = 0;i < vec1.size();++i)	{
 		a += vec1[i].cost;
 	}
-	for (int i = 0;i < vec2.size();++i)
-	{
+	for (int i = 0;i < vec2.size();++i)	{
 		a += vec2[i].cost;
 	}
 	return a;
@@ -77,14 +74,7 @@ void sort_words(vector<Word> &vec1) {
 		return r1 < r2;
 	});
 }
-// hor: 1  0  5
-    //  r  c1  c2
-  //    fix a  b
 
-//  ver:  0   5   1
-//       r1  r2  c 
-//       a    b  fix
-//if (GV[j].a <= GH[i].fix && GH[i].fix <= GV[j].b && GH[i].a <= GV[j].fix && GV[j].fix <= GH[i].b)
 
 void sort_intersec(vector<Word> &h, vector<Word> &v) {
 	for (int i = 0;i < h.size();++i)
@@ -109,19 +99,69 @@ void find_intersections(vector<Word> &h, vector<Word> &v, const int N1, const in
 
 void create_graph(vector<Word> &h, vector<Word> &v, vector <pair<int, pair<int, int>>> &adjG)
 {
+	map<pair<int, int>, int> isñ;
 
+	int a = 0, b = 1;
+	for (int i = 0;i < h.size();++i) {
+		a++;
+		b++;
+		if (h[i].intersec.size() > 1)
+			for (int j = 0;j < h[i].intersec.size() - 1;++j) {
+				pair<int, pair<int, int>> p;
+
+				p.second.first = a;
+				p.second.second = b;
+				///
+				isñ.emplace(make_pair(make_pair(h[i].r, h[i].intersec[j]), a));
+				isñ.emplace(make_pair(make_pair(h[i].r, h[i].intersec[j + 1]), b));
+				///
+				p.first = abs(h[i].intersec[j + 1] - h[i].intersec[j] - 1);
+				adjG.emplace_back(p);
+				a++;
+				b++;
+			}
+		///
+		else if (h[i].intersec.size() == 1) {
+			isñ.emplace(make_pair(make_pair(h[i].r, h[i].intersec[0]), a));
+			a++;
+			b++;
+		}
+		///
+	}
+
+	for (int i = 0;i < v.size();++i) {
+		if (v[i].intersec.size() > 0)
+			for (int j = 0;j < v[i].intersec.size() - 1;++j) {
+				pair<int, pair<int, int>> p;
+				///
+				p.second.first = isñ[make_pair(v[i].intersec[j], v[i].r)];
+				p.second.second = isñ[make_pair(v[i].intersec[j + 1], v[i].r)];
+				///
+				p.first = abs(v[i].intersec[j + 1] - v[i].intersec[j] - 1);
+				adjG.emplace_back(p);
+			}
+
+	}
+
+}
+/*void create_graph(vector<Word> &h, vector<Word> &v, vector <pair<int, pair<int, int>>> &adjG)
+{
+	map<pair<int, int>, int >iss;
 	int a = 0, b = 1;
 	for (int i = 0;i < h.size();++i){
 		if (h[i].intersec.size() > 0)
 			for (int j = 0;j < h[i].intersec.size() - 1;++j) {
 				pair<int, pair<int, int>> p;
 
-				p.second.first = a;
-				p.second.second = b;
+				iss.emplace(make_pair(make_pair(h[j].r, h[j].intersec[i]), a));
+				iss.emplace(make_pair(make_pair(h[j].r, h[j].intersec[i]), b));
+
+				p.second.first = a+i;
+				p.second.second = b+i;
 				p.first = abs(h[i].intersec[j + 1] - h[i].intersec[j] - 1);
 				adjG.emplace_back(p);
-				a += 2;
-				b += 2;
+				a += 1;
+				b += 1;
 			}	
 	}
 
@@ -139,9 +179,42 @@ void create_graph(vector<Word> &h, vector<Word> &v, vector <pair<int, pair<int, 
 	}
 	
 }
+*/
 
+/*int dsu_get(int v) {
+	return (v == p[v]) ? v : (p[v] = dsu_get(p[v]));
+}
 
-
+void dsu_unite(int a, int b) {
+	a = dsu_get(a);
+	b = dsu_get(b);
+	if (rand() & 1)
+		swap(a, b);
+	if (a != b)
+		p[a] = b;
+}
+void kruskal(vector <pair<int, pair<int, int>>> &adjG, const int cnt, int &c) {
+	int cost = 0, n = cnt, m = adjG.size();
+	sort(adjG.begin(), adjG.end());
+	p.resize(n);
+	for (int i = 0; i<n; ++i)
+		p[i] = i;
+	for (int i = 0; i<m; ++i) {
+		int a = g[i].second.first, b = g[i].second.second, l = g[i].first;
+		if (dsu_get(a) != dsu_get(b)) {
+			cost += l;
+			dsu_unite(a, b);
+		}
+		else
+			if (l == 0)
+			{
+				fout << -1 << endl;
+				fout.close();
+				return;
+			}
+	}
+}
+*/
 int dsu_get(int v) {
 	if (v == p[v])
 		return v;
@@ -167,6 +240,7 @@ void kruskal(vector <pair<int, pair<int, int>>> &adjG, const int cnt, int &c)
 	sort(adjG.begin(), adjG.end());
 	p.resize(n);
 	rang.resize(n,0);
+
 	for (int i = 0; i < n; ++i) 
 		p[i] = i;
 		
@@ -187,50 +261,6 @@ void kruskal(vector <pair<int, pair<int, int>>> &adjG, const int cnt, int &c)
 	c = cost;	
 }
 
-
-/*void kruskal_rb(vector <pair<int, pair<int, int>>> &adjG, const int cnt, int &c)
-{
-	int cost = 0, n = cnt, m = adjG.size();
-	sort(adjG.begin(), adjG.end());
-	p.resize(n);
-	rang.resize(n, 0);
-	for (int i = 0; i < n; ++i)
-		p[i] = i;
-
-	for (int i = 0; i < m; ++i) {
-		int a = g[i].second.first, b = g[i].second.second, l = g[i].first;
-		if (dsu_get(a) == dsu_get(b))
-			continue;
-		dsu_unite(a, b);
-		cost++;
-		if (cost == n - 1)
-			break;
-	}
-	c = cost;
-}*/
-
-/*void kruskal1(vector < pair < int, pair<int, int> > > &adjG, const int cnt, int &c) {
-	int cost = 0, n = cnt, m = adjG.size();
-
-	sort(adjG.begin(), adjG.end());
-	vector<int> tree_id(n);
-	for (int i = 0; i<n; ++i)
-		tree_id[i] = i;
-	for (int i = 0; i<m; ++i)
-	{
-		int a = g[i].second.first, b = g[i].second.second, l = g[i].first;
-		if (tree_id[a] != tree_id[b])
-		{
-			cost += l;
-			int old_id = tree_id[b], new_id = tree_id[a];
-			for (int j = 0; j<n; ++j)
-				if (tree_id[j] == old_id)
-					tree_id[j] = new_id;
-		}
-	}
-	c = cost;
-}
-*/
 void print_result(int &Wp,int &Kp, int &vernum) {
 	fout << Wp - Kp - vernum << endl;
 	fout.close();
@@ -239,25 +269,21 @@ int main() {
 
 	create_vector(hor, ver);
 
+	Wprice = count_cost(hor, ver);
+
 	sort_words(hor);
 
 	sort_words(ver);
-
-	Wprice = count_cost(hor, ver);
 
 	find_intersections(hor, ver, H, V,vertexnum);
 
 	sort_intersec(hor, ver);
 
 	create_graph(hor, ver, g);
-//	kruskal1(g, vertexnum, Kprice);
+
 	kruskal(g, vertexnum, Kprice);
 
-	
-
 	print_result(Wprice, Kprice, vertexnum);
-
-
 
 	return EXIT_SUCCESS;
 }
