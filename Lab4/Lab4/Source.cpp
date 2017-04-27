@@ -183,12 +183,10 @@ void dsu_unite(int a, int b) {
 
 }
 
-void kruskal(vector <pair<int, pair<int, int>>> &adjG, const int cnt, int &c, const int lnum)
+void kruskal(const int cnt, int &c, const int lnum)
 {
-	int cost = 0, n = lnum, m = adjG.size();
-	sort(adjG.begin(), adjG.end(), [](auto& t1, auto& t2) {
-		return (t1.second < t2.second);
-	});
+	int cost = 0, n = lnum, m = g.size();
+	sort(g.begin(), g.end());
 	p.resize(n);
 	rang.resize(n, 0);
 
@@ -215,7 +213,7 @@ void kruskal(vector <pair<int, pair<int, int>>> &adjG, const int cnt, int &c, co
 
 
 void print_result(int &Wp,int &Kp, int &vernum) {
-	fout << Wp - Kp - vernum << endl;
+	fout <<Wp-Kp-vernum<< endl;
 	fout.close();
 }
 int main() {
@@ -232,9 +230,9 @@ int main() {
 
 	sort_intersec(hor, ver);
 
-	create_graph(hor, ver, g,lastnum,residue);
+	create_graph(hor, ver, g, lastnum, residue);
 
-	kruskal(g, vertexnum, Kprice,lastnum);
+	kruskal(vertexnum, Kprice,lastnum);
 
 	print_result(Wprice, Kprice, vertexnum);
 
