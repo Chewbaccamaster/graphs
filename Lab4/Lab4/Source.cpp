@@ -223,12 +223,12 @@ int main() {
 	create_vector(hor, ver);
 
 	Wprice = count_cost(hor, ver);
-
+	
 	sort_words(hor);
 
 	sort_words(ver);
 
-	find_intersections(hor, ver, H, V,vertexnum);
+	find_intersections(hor, ver, H, V, vertexnum);
 
 	sort_intersec(hor, ver);
 
