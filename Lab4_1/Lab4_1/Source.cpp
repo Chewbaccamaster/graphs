@@ -8,7 +8,7 @@ using namespace std;
 
 ifstream fin("input.txt");
 ofstream fout("output.txt");
-int H, V, Wprice = 0, vertexnum = 0;
+int H, V, Wprice = 0, vertexnum = 0, residue = 0;
 vector<int> p, rang;
 vector <pair<int, pair<int, int>>> g;
 
@@ -17,13 +17,18 @@ struct Word
 	int r;
 	int c1;
 	int c2;
-	vector<int> intersec;
+};
+
+struct Edge 
+{
+	int firstv;
+	int secondv;
 	int cost;
 };
 
 vector<Word> hor, ver;
 
-void create_vector(vector<Word> &vec1, vector<Word> &vec2) {
+void create_vector(vector<Word> &vec1, vector<Word> &vec2, int &cost) {
 	fin >> H >> V;
 	for (int i = 0; i < H; ++i) {
 		Word temp;
@@ -34,9 +39,8 @@ void create_vector(vector<Word> &vec1, vector<Word> &vec2) {
 		temp.r = a;
 		temp.c1 = min(b, c);
 		temp.c2 = max(b, c);
-		temp.cost = temp.c2 - temp.c1 + 1;
-		temp.intersec.resize(0);
-
+		cost += abs(b - c + 1);
+		
 		vec1.emplace_back(temp);
 	}
 	for (int i = 0; i < V; ++i) {
@@ -46,26 +50,16 @@ void create_vector(vector<Word> &vec1, vector<Word> &vec2) {
 
 							// r1 r2 c   0 5 3
 		temp.r = c; // r <- c
-		temp.c1 = a; // c1 <- r1
-		temp.c2 = b;  // c2 <- r2
-		temp.cost = abs(b - a + 1);
-		temp.intersec.resize(0);
+		temp.c1 = min(a,b); // c1 <- r1
+		temp.c2 = max(a,b);  // c2 <- r2
+		cost += abs(b - a + 1);
+		
 
 		vec2.emplace_back(temp);
 	}
 
 }
 
-void count_cost(vector<Word> &vec1, vector<Word> &vec2, int &w) {
-	
-	for (int i = 0; i < vec1.size(); ++i) {
-		w += vec1[i].cost;
-	}
-	for (int i = 0; i < vec2.size(); ++i) {
-		w += vec2[i].cost;
-	}
-	
-}
 
 void sort_words(vector<Word> &vec1) {
 	sort(vec1.begin(), vec1.end(), [](const Word &v1, const Word &v2) -> bool {
@@ -75,7 +69,7 @@ void sort_words(vector<Word> &vec1) {
 	});
 }
 
-void find_intersections(vector<Word> &h, vector<Word> &v, const int N1, const int N2, int &cnt)
+/*void find_intersections(vector<Word> &h, vector<Word> &v, const int N1, const int N2, int &cnt)
 {
 	for (int i = 0; i < N1; ++i)
 		for (int j = 0; j < N2; ++j) {
@@ -96,24 +90,57 @@ void sort_intersec(vector<Word> &h, vector<Word> &v) {
 	for (int i = 0; i < v.size(); ++i)
 		sort(v[i].intersec.begin(), v[i].intersec.end());
 }
+*/
+void create_graph(vector <pair<int, pair<int, int>>> &adjG, vector<Word> h, vector<Word> v, const int N1, const int N2, int &vernum, int &rest) {
+	int cnt = 0;
+	vector<int> intersec;
+	Edge arc;
+	pair<int, pair<int, int>> p;
+	for (int i = 0;i < N1;++i)
+		for (int j = 0;j < N2;++j) 
+		{
+			if (v[j].c1 <= h[i].r && h[i].r <= v[j].c2 && h[i].c1 <= v[j].r && v[j].r <= h[i].c2) 
+			{
+				
+				if (intersec.size() == 0) 
+				{
 
-void create_graph(vector <pair<int, pair<int, int>>> &adjG, vector<Word> h, vector<Word> v) {
-	
+					intersec.emplace_back(v[j].r);
+					arc.firstv = cnt;
+					rest += abs(v[j].r = h[i].r);
+					vernum++;
+				}
 
-	for (int i = 0;i < v.size();++i)
-		for (int j = 0;j < h.size();++j) {
+				else
+				{
+					vernum++;
+					cnt++;
+					arc.secondv = cnt;
+					arc.cost = abs(h[i].r - intersec[0] - 1);
+					p.first = arc.cost;
+					p.second.first = arc.firstv;
+					p.second.second = arc.secondv;
 
+					adjG.emplace_back(p);
+
+					intersec.resize(0);
+
+				}
+			}
 		}
+	cout << 1;
 }
 
 int main() {
 
 
-	create_vector(hor, ver);
+	create_vector(hor, ver, Wprice);
 
-	find_intersections(hor, ver, H, V, vertexnum);
+	sort_words(hor);
+	sort_words(ver);
 
-	count_cost(hor, ver, Wprice);
+	create_graph(g, hor, ver, H, V, vertexnum, residue);
+
 
 
 
