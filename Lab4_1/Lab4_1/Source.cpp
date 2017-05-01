@@ -154,14 +154,14 @@ void create_graph(vector <pair<int, pair<int, int>>> &adjG, vector<Word> &h, vec
 
 
 	}
-	vertexnum = cnt;
+	vernum = cnt;
 
-	for (int i = 0;i < N2;++i) {
+	for (int i = 0;i < N2;++i) 
 		if (v[i].first_isc == -1)
 			rest += v[i].c2 - v[i].c1 + 1;
 		else
 			rest += v[i].c2 - v[i].second_isc;
-	}
+	
 }
 
 int dsu_get(int v) {
