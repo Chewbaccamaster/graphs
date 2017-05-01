@@ -8,7 +8,7 @@ using namespace std;
 
 ifstream fin("input.txt");
 ofstream fout("output.txt");
-int H, V, Wprice = 0, vertexnum = 0, residue = 0;
+int H, V, Wprice = 0, vertexnum = 0, residue = 0, Kprice = 0;
 vector<int> p, rang;
 vector <pair<int, pair<int, int>>> g;
 
@@ -17,6 +17,8 @@ struct Word
 	int r;
 	int c1;
 	int c2;
+	int first_isc;
+	int second_isc;
 };
 
 struct Edge 
@@ -53,7 +55,8 @@ void create_vector(vector<Word> &vec1, vector<Word> &vec2, int &cost) {
 		temp.c1 = min(a,b); // c1 <- r1
 		temp.c2 = max(a,b);  // c2 <- r2
 		cost += abs(b - a + 1);
-		
+		temp.first_isc = -1;
+		temp.second_isc = -1;
 
 		vec2.emplace_back(temp);
 	}
@@ -94,53 +97,125 @@ void sort_intersec(vector<Word> &h, vector<Word> &v) {
 void create_graph(vector <pair<int, pair<int, int>>> &adjG, vector<Word> &h, vector<Word> &v, const int N1, const int N2, int &vernum, int &rest) {
 	int cnt = 0;
 	vector<int> intersec_h, intersec_v;
+	bool flag = false;
+	int last_intersec;
 	Edge arc_h, arc_v;
 	pair<int, pair<int, int>> p;
 	for (int i = 0;i < N1;++i)
 	{
+		flag = false;
+		last_intersec = h[i].c1;
+
 		for (int j = 0;j < N2;++j)
 		{
+			
 			if (v[j].c1 <= h[i].r && h[i].r <= v[j].c2 && h[i].c1 <= v[j].r && v[j].r <= h[i].c2)
 			{
-
-				if (intersec_h.size() == 0)
+				if (!flag)
 				{
-					arc_h.firstv = cnt;
-					rest += abs(v[j].r - h[i].r);
-					intersec_h.emplace_back(v[j].r);
-					intersec_v.emplace_back(h[i].r);
-					vernum++;
-					cnt++;
+					rest += v[j].r - h[i].c1;
+					flag = true;
+					
 				}
+
 				else
 				{
-					vernum++;
-					arc_h.secondv = cnt;
-					cnt++;
-					arc_h.cost = abs(v[j].r - intersec_h[0] - 1);
-					p.first = arc_h.cost;
-					p.second.first = arc_h.firstv;
-					p.second.second = arc_h.secondv;
-					rest += abs(h[i].c2 - v[j].r);
-
+					p.second.first = cnt - 1;
+					p.second.second = cnt;
+					p.first = abs(v[j].r - last_intersec - 1);
 					adjG.emplace_back(p);
-					intersec_h.resize(0);
 				}
 
 
+				if (v[j].first_isc == -1)
+					rest += h[i].r - v[i].c1;
+				else 
+				{
+					p.second.first = v[j].first_isc;
+					p.second.second = cnt;
+					p.first = abs(h[i].r - v[j].second_isc - 1);
+					adjG.emplace_back(p);
+				}
 
+					
 
+				v[j].first_isc = cnt;
+				v[j].second_isc = h[i].r;
 
-
+				last_intersec = v[j].r;
+				cnt++;
 
 			}
 		}
-		if (intersec_h.size() == 0)
-			rest += abs(h[i].c2 - h[i].c1 + 1);
-		
+		if (!flag)
+			rest += h[i].c2 - h[i].c1 + 1;
+		else
+			rest += h[i].c2 - last_intersec;
+
+
 	}
-		
-	cout << 1;
+	vertexnum = cnt;
+
+	for (int i = 0;i < N2;++i) {
+		if (v[i].first_isc == -1)
+			rest += v[i].c2 - v[i].c1 + 1;
+		else
+			rest += v[i].c2 - v[i].second_isc;
+	}
+}
+
+int dsu_get(int v) {
+	if (v == p[v])
+		return v;
+	return p[v] = dsu_get(p[v]);
+}
+
+void dsu_unite(int a, int b) {
+	int	ra = dsu_get(a);
+	int rb = dsu_get(b);
+	if (ra == rb)
+		return;
+	if (rang[ra] > rang[rb])
+		swap(ra, rb);
+	p[ra] = rb;
+	if (rang[ra] == rang[rb])
+		rang[rb]++;
+
+}
+
+void kruskal(vector <pair<int, pair<int, int>>> &adjG, int &vernum, int &c)
+{
+	int cost = 0, n = vernum, m = adjG.size();
+	sort(adjG.begin(), adjG.end());
+	
+	p.resize(n);
+	rang.resize(n, 0);
+
+	for (int i = 0; i < n; ++i)
+		p[i] = i;
+
+	for (int i = 0; i < m; ++i) {
+		int a = g[i].second.first, b = g[i].second.second, l = g[i].first;
+		if (dsu_get(a) == dsu_get(b)) {
+			if (l == 0) {
+				fout << -1 << endl;
+				fout.close();
+				return;
+			}
+		}
+		else {
+			//cout << a << ' ' << b << endl;
+			dsu_unite(a, b);
+			cost += l;
+			continue;
+		}
+	}
+	c = cost;
+}
+
+void print_result(int &Kp, int &rest, int &vnum) {
+	fout << Kp + vnum + rest << endl;
+	fout.close();
 }
 
 int main() {
@@ -153,8 +228,8 @@ int main() {
 
 	create_graph(g, hor, ver, H, V, vertexnum, residue);
 
-
-
+	kruskal(g, vertexnum, Kprice);
+	print_result(Kprice, residue, vertexnum);
 
 	return EXIT_SUCCESS;
 }
