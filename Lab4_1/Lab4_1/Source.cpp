@@ -3,16 +3,23 @@
 #include <fstream>
 #include <vector>
 #include <algorithm>
-#include <map>
+
 using namespace std;
 
 ifstream fin("input.txt");
 ofstream fout("output.txt");
-int H, V, Wprice = 0, vertexnum = 0, residue = 0, Kprice = 0;
+int H, V, vertexnum = 0, wremainder = 0, Kprice = 0;
 vector<int> p, rang;
 vector <pair<int, pair<int, int>>> g;
 
-struct Word
+struct hWord
+{
+	int r;
+	int c1;
+	int c2;
+};
+
+struct vWord
 {
 	int r;
 	int c1;
@@ -21,40 +28,34 @@ struct Word
 	int second_isc;
 };
 
-struct Edge 
-{
-	int firstv;
-	int secondv;
-	int cost;
-};
+vector<hWord> hor;
+vector<vWord> ver;
 
-vector<Word> hor, ver;
-
-void create_vector(vector<Word> &vec1, vector<Word> &vec2, int &cost) {
+void create_vector(vector<hWord> &vec1, vector<vWord> &vec2) {
 	fin >> H >> V;
 	for (int i = 0; i < H; ++i) {
-		Word temp;
+		hWord temp;
 		int a, b, c;
 		fin >> a >> b >> c;  // r c1 c2   1 0 5 
 
 							 //  r c1 c2   4 0 5
 		temp.r = a;
-		temp.c1 = min(b, c);
-		temp.c2 = max(b, c);
-		cost += abs(b - c + 1);
+		temp.c1 = b;// min(b, c);
+		temp.c2 = c;//max(b, c);
+		
 		
 		vec1.emplace_back(temp);
 	}
 	for (int i = 0; i < V; ++i) {
-		Word temp;
+		vWord temp;
 		int a, b, c;
 		fin >> a >> b >> c; // r1 r2 c	 0 5 1
 
 							// r1 r2 c   0 5 3
 		temp.r = c; // r <- c
-		temp.c1 = min(a,b); // c1 <- r1
-		temp.c2 = max(a,b);  // c2 <- r2
-		cost += abs(b - a + 1);
+		temp.c1 = a;// min(a, b); // c1 <- r1
+		temp.c2 = b;//max(a, b);  // c2 <- r2
+		
 		temp.first_isc = -1;
 		temp.second_isc = -1;
 
@@ -63,90 +64,63 @@ void create_vector(vector<Word> &vec1, vector<Word> &vec2, int &cost) {
 
 }
 
-
-void sort_words(vector<Word> &vec1) {
-	sort(vec1.begin(), vec1.end(), [](const Word &v1, const Word &v2) -> bool {
-		int r1 = v1.c1;
-		int r2 = v2.c1;
+void sort_hwords(vector<hWord> &vec1) {
+	sort(vec1.begin(), vec1.end(), [](const hWord &v1, const hWord &v2) -> bool {
+		int r1 = v1.r;
+		int r2 = v2.r;
+		return r1 < r2;
+	});
+}
+void sort_vwords(vector<vWord> &vec1) {
+	sort(vec1.begin(), vec1.end(), [](const vWord &v1, const vWord &v2) -> bool {
+		int r1 = v1.r;
+		int r2 = v2.r;
 		return r1 < r2;
 	});
 }
 
-/*void find_intersections(vector<Word> &h, vector<Word> &v, const int N1, const int N2, int &cnt)
-{
-	for (int i = 0; i < N1; ++i)
-		for (int j = 0; j < N2; ++j) {
-			if (v[j].c1 <= h[i].r && h[i].r <= v[j].c2 && h[i].c1 <= v[j].r && v[j].r <= h[i].c2) {
-				h[i].intersec.emplace_back(v[j].r);
-				v[j].intersec.emplace_back(h[i].r);
-				cnt += 1;
-			}
-		}
-
-
-}
-
-void sort_intersec(vector<Word> &h, vector<Word> &v) {
-	for (int i = 0; i < h.size(); ++i)
-		sort(h[i].intersec.begin(), h[i].intersec.end());
-
-	for (int i = 0; i < v.size(); ++i)
-		sort(v[i].intersec.begin(), v[i].intersec.end());
-}
-*/
-void create_graph(vector <pair<int, pair<int, int>>> &adjG, vector<Word> &h, vector<Word> &v, const int N1, const int N2, int &vernum, int &rest) {
+void create_graph(vector <pair<int, pair<int, int>>> &adjG, vector<hWord> &h, vector<vWord> &v, const int N1, const int N2, int &vernum, int &rest) {
 	int cnt = 0;
-	vector<int> intersec_h, intersec_v;
 	bool flag = false;
 	int last_intersec;
-	Edge arc_h, arc_v;
 	pair<int, pair<int, int>> p;
-	for (int i = 0;i < N1;++i)
-	{
+	for (int i = 0;i < N1;++i) {
 		flag = false;
+
 		last_intersec = h[i].c1;
 
-		for (int j = 0;j < N2;++j)
-		{
-			
-			if (v[j].c1 <= h[i].r && h[i].r <= v[j].c2 && h[i].c1 <= v[j].r && v[j].r <= h[i].c2)
-			{
-				if (!flag)
-				{
+		for (int j = 0;j < N2;++j) {	
+			if (v[j].c1 <= h[i].r && h[i].r <= v[j].c2 && h[i].c1 <= v[j].r && v[j].r <= h[i].c2) {
+				if (!flag) {
 					rest += v[j].r - h[i].c1;
-					flag = true;
-					
+					flag = true;		
 				}
-
-				else
-				{
+				else {
 					p.second.first = cnt - 1;
 					p.second.second = cnt;
 					p.first = abs(v[j].r - last_intersec - 1);
 					adjG.emplace_back(p);
 				}
-
-
 				if (v[j].first_isc == -1)
-					rest += h[i].r - v[i].c1;
-				else 
-				{
+					rest += h[i].r - v[j].c1;
+
+				else {
 					p.second.first = v[j].first_isc;
 					p.second.second = cnt;
 					p.first = abs(h[i].r - v[j].second_isc - 1);
 					adjG.emplace_back(p);
-				}
-
-					
+				}				
 
 				v[j].first_isc = cnt;
+
 				v[j].second_isc = h[i].r;
 
 				last_intersec = v[j].r;
-				cnt++;
 
+				cnt++;
 			}
 		}
+
 		if (!flag)
 			rest += h[i].c2 - h[i].c1 + 1;
 		else
@@ -154,6 +128,7 @@ void create_graph(vector <pair<int, pair<int, int>>> &adjG, vector<Word> &h, vec
 
 
 	}
+
 	vernum = cnt;
 
 	for (int i = 0;i < N2;++i) 
@@ -180,13 +155,12 @@ void dsu_unite(int a, int b) {
 	p[ra] = rb;
 	if (rang[ra] == rang[rb])
 		rang[rb]++;
-
 }
 
-void kruskal(vector <pair<int, pair<int, int>>> &adjG, int &vernum, int &c)
-{
-	int cost = 0, n = vernum, m = adjG.size();
-	sort(adjG.begin(), adjG.end());
+void kruskal( int &vernum, int &c) {
+	int cost = 0, n = vernum, m = g.size();
+
+	sort(g.begin(), g.end());
 	
 	p.resize(n);
 	rang.resize(n, 0);
@@ -204,7 +178,6 @@ void kruskal(vector <pair<int, pair<int, int>>> &adjG, int &vernum, int &c)
 			}
 		}
 		else {
-			//cout << a << ' ' << b << endl;
 			dsu_unite(a, b);
 			cost += l;
 			continue;
@@ -221,15 +194,16 @@ void print_result(int &Kp, int &rest, int &vnum) {
 int main() {
 
 
-	create_vector(hor, ver, Wprice);
+	create_vector(hor, ver);
 
-	sort_words(hor);
-	sort_words(ver);
+	sort_hwords(hor);
+	sort_vwords(ver);
 
-	create_graph(g, hor, ver, H, V, vertexnum, residue);
+	create_graph(g, hor, ver, H, V, vertexnum, wremainder);
 
-	kruskal(g, vertexnum, Kprice);
-	print_result(Kprice, residue, vertexnum);
+	kruskal(vertexnum, Kprice);
+
+	print_result(Kprice, wremainder, vertexnum);
 
 	return EXIT_SUCCESS;
 }

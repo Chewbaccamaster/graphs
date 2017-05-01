@@ -1,5 +1,3 @@
 ﻿  Source.cpp
-e:\git\graphs\lab4_1\lab4_1\source.cpp(102): warning C4101: arc_v: неиспользованная локальная переменная
-e:\git\graphs\lab4_1\lab4_1\source.cpp(102): warning C4101: arc_h: неиспользованная локальная переменная
   Lab4_1.vcxproj -> E:\Git\graphs\Lab4_1\Debug\Lab4_1.exe
   Lab4_1.vcxproj -> E:\Git\graphs\Lab4_1\Debug\Lab4_1.pdb (Full PDB)
