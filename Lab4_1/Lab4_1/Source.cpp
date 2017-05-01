@@ -91,23 +91,25 @@ void sort_intersec(vector<Word> &h, vector<Word> &v) {
 		sort(v[i].intersec.begin(), v[i].intersec.end());
 }
 */
-void create_graph(vector <pair<int, pair<int, int>>> &adjG, vector<Word> h, vector<Word> v, const int N1, const int N2, int &vernum, int &rest) {
-	int cnt = 0;
+void create_graph(vector <pair<int, pair<int, int>>> &adjG, vector<Word> &h, vector<Word> &v, const int N1, const int N2, int &vernum, int &rest) {
+	int cnt = -1;
 	vector<int> intersec;
 	Edge arc;
 	pair<int, pair<int, int>> p;
 	for (int i = 0;i < N1;++i)
-		for (int j = 0;j < N2;++j) 
+	{
+		cnt++;
+		for (int j = 0;j < N2;++j)
 		{
-			if (v[j].c1 <= h[i].r && h[i].r <= v[j].c2 && h[i].c1 <= v[j].r && v[j].r <= h[i].c2) 
+			if (v[j].c1 <= h[i].r && h[i].r <= v[j].c2 && h[i].c1 <= v[j].r && v[j].r <= h[i].c2)
 			{
-				
-				if (intersec.size() == 0) 
+
+				if (intersec.size() == 0)
 				{
 
 					intersec.emplace_back(v[j].r);
 					arc.firstv = cnt;
-					rest += abs(v[j].r = h[i].r);
+			//		rest += abs(v[j].r - h[i].r);
 					vernum++;
 				}
 
@@ -116,7 +118,7 @@ void create_graph(vector <pair<int, pair<int, int>>> &adjG, vector<Word> h, vect
 					vernum++;
 					cnt++;
 					arc.secondv = cnt;
-					arc.cost = abs(h[i].r - intersec[0] - 1);
+					arc.cost = abs(v[j].r - intersec[0] - 1);
 					p.first = arc.cost;
 					p.second.first = arc.firstv;
 					p.second.second = arc.secondv;
@@ -128,6 +130,8 @@ void create_graph(vector <pair<int, pair<int, int>>> &adjG, vector<Word> h, vect
 				}
 			}
 		}
+	}
+		
 	cout << 1;
 }
 
