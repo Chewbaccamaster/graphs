@@ -79,40 +79,34 @@ void sort_vwords(vector<vWord> &vec1) {
 	});
 }
 
-void create_graph(vector <pair<int, pair<int, int>>> &adjG, vector<hWord> &h, vector<vWord> &v, const int N1, const int N2, int &vernum, int &rest) {
+void add_edge(int w1,int w2, int v1, int v2) {
+	int w = abs(w1 - w2 - 1);
+	g.emplace_back(w, make_pair(v1, v2));
+}
+void create_graph(vector<hWord> &h, vector<vWord> &v, const int N1, const int N2, int &vernum, int &rest) {
 	int cnt = 0;
 	bool flag = false;
 	int last_intersec;
-	pair<int, pair<int, int>> p;
 	for (int i = 0;i < N1;++i) {
-		flag = false;
 
+		flag = false;
 		last_intersec = h[i].c1;
 
-		for (int j = 0;j < N2;++j) {	
+		for (int j = 0;j < N2;++j) {
 			if (v[j].c1 <= h[i].r && h[i].r <= v[j].c2 && h[i].c1 <= v[j].r && v[j].r <= h[i].c2) {
-				if (!flag) {
+				if (flag) 
+					add_edge(v[j].r, last_intersec, cnt - 1, cnt);
+				else {
 					rest += v[j].r - h[i].c1;
-					flag = true;		
+					flag = true;
 				}
-				else {
-					p.second.first = cnt - 1;
-					p.second.second = cnt;
-					p.first = abs(v[j].r - last_intersec - 1);
-					adjG.emplace_back(p);
-				}
-				if (v[j].first_isc == -1)
-					rest += h[i].r - v[j].c1;
-
-				else {
-					p.second.first = v[j].first_isc;
-					p.second.second = cnt;
-					p.first = abs(h[i].r - v[j].second_isc - 1);
-					adjG.emplace_back(p);
-				}				
+					
+				if (v[j].first_isc != -1)
+					add_edge(h[i].r, v[j].second_isc, v[j].first_isc, cnt);
+				else
+					rest += h[i].r - v[j].c1;					
 
 				v[j].first_isc = cnt;
-
 				v[j].second_isc = h[i].r;
 
 				last_intersec = v[j].r;
@@ -125,8 +119,6 @@ void create_graph(vector <pair<int, pair<int, int>>> &adjG, vector<hWord> &h, ve
 			rest += h[i].c2 - h[i].c1 + 1;
 		else
 			rest += h[i].c2 - last_intersec;
-
-
 	}
 
 	vernum = cnt;
@@ -157,7 +149,7 @@ void dsu_unite(int a, int b) {
 		rang[rb]++;
 }
 
-void kruskal( int &vernum, int &c) {
+void kruskal(int &vernum, int &c) {
 	int cost = 0, n = vernum, m = g.size();
 
 	sort(g.begin(), g.end());
@@ -193,13 +185,12 @@ void print_result(int &Kp, int &rest, int &vnum) {
 
 int main() {
 
-
 	create_vector(hor, ver);
 
 	sort_hwords(hor);
 	sort_vwords(ver);
 
-	create_graph(g, hor, ver, H, V, vertexnum, wremainder);
+	create_graph(hor, ver, H, V, vertexnum, wremainder);
 
 	kruskal(vertexnum, Kprice);
 
