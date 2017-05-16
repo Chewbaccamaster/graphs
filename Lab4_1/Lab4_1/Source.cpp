@@ -83,6 +83,7 @@ void add_edge(int w1,int w2, int v1, int v2) {
 	int w = abs(w1 - w2 - 1);
 	g.emplace_back(w, make_pair(v1, v2));
 }
+
 void create_graph(vector<hWord> &h, vector<vWord> &v, const int N1, const int N2, int &vernum, int &rest) {
 	int cnt = 0;
 	bool flag = false;
