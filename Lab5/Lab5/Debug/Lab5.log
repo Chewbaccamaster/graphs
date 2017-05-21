@@ -1,0 +1,5 @@
+﻿  Source.cpp
+e:\git\graphs\lab5\lab5\source.cpp(159): warning C4018: <: несоответствие типов со знаком и без знака
+e:\git\graphs\lab5\lab5\source.cpp(160): warning C4018: <: несоответствие типов со знаком и без знака
+  Lab5.vcxproj -> E:\Git\graphs\Lab5\Debug\Lab5.exe
+  Lab5.vcxproj -> E:\Git\graphs\Lab5\Debug\Lab5.pdb (Full PDB)

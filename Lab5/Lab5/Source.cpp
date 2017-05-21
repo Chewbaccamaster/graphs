@@ -3,98 +3,177 @@
 #include <fstream>
 #include <vector>
 #include <algorithm>
-
 using namespace std;
-
-ifstream fin("input.txt");
-ofstream fout("output.txt");
-int N;
-
-
-struct Line {
-	double a, b, c;
-};
-
-struct pt {
-	int x, y;
-};
 
 const double Pi = atan(1) * 4;
 const double EPS = 1E-9;
 
-vector<Line> v;
+ifstream fin("input.txt");
+ofstream fout("output.txt");
 
-vector<int> Vintik, Shpuntik;
+struct pt {
+	double x, y;
+
+	pt (){}
+	pt(double a, double b) {
+		x = a;
+		y = b;
+	}
+	bool operator< (const pt & p) const {
+		return x < p.x - EPS || abs(x - p.x) < EPS && y < p.y - EPS;
+	}
+};
+
+struct Line {
+	double a, b, c;
+
+	Line() {}
+	Line(pt p, pt q) {
+		a = p.y - q.y;
+		b = q.x - p.x;
+		c = -a * p.x - b * p.y;
+		norm();
+	}
+
+	void norm() {
+		double z = sqrt(a*a + b*b);
+		if (abs(z) > EPS)
+			a /= z, b /= z, c /= z;
+	}
+
+	double dist(pt p) const {
+		return a * p.x + b * p.y + c;
+	}
+};
+
+struct Segment {
+	pt first_pt;
+	pt second_pt;
+
+	Segment() {}
+	Segment(double a, double b, double c, double d) {
+		first_pt = pt(a, b);
+		second_pt = pt(c, d);
+	}
+	vector<pt> intersection;
+};
+
+vector<Segment> v;
+
+pt Vintik, Shpuntik;
 
 vector < pair<int, pair<int, int>>> g;
 
-void create_vector(vector<Line> &vec, int &n, vector<int> &v1, vector<int> &v2) {
-	fin >> n;
-	for (int i = 0;i < n;++i) {
-		Line ln;
-		int x1, y1, x2, y2;
+void create_vector(vector<Segment> &vec) {
+	int N;
+	fin >> N;
+	for (int i = 0;i < N;++i) {
+		Segment seg;
+		double x1, y1, x2, y2;
 		fin >> x1 >> y1 >> x2 >> y2;
+	
 
-
+		if (x1 > x2) {
+			swap(x1, x2);
+			swap(y1, y2);
+		}
+		seg = Segment(x1, y1, x2, y2);
 		// (x1,y1)  (x2,y2)
 		// x-x1/x2-x1  = y-y1/y2-y1
-
-		ln.a = y2 - y1;
-		ln.b = x1 - x2;
-		ln.c = -x1*y2 + y1*x2;
-		vec.emplace_back(ln);
+		
+		vec.push_back(seg);
 	}
 
-	int a, b, c, d;
-	fin >> a, b, c, d;
-	v1.emplace_back(a, b); // Vintik
-	v2.emplace_back(c, d); // Shpuntik
+	
+	
+	fin >> Vintik.x >> Vintik.y >> Shpuntik.x >> Shpuntik.y;
+	//v1.push_back(Vintik); // Vintik
+//	v2.push_back(Shpuntik); // Shpuntik
 }
 
+#define det(a,b,c,d)  (a*d-b*c)
 
-
-double det(double a, double b, double c, double d) {
-	return a * d - b * c;
+inline bool betw(double l, double r, double x) {
+	return min(l, r) <= x + EPS && x <= max(l, r) + EPS;
 }
 
-bool intersect(Line m, Line n) {
-	double zn = det(m.a, m.b, n.a, n.b);
-	if (abs(zn) < EPS)
+inline bool intersect_1d(double a, double b, double c, double d) {
+	if (a > b)  swap(a, b);
+	if (c > d)  swap(c, d);
+	return max(a, c) <= min(b, d) + EPS;
+}
+
+bool intersect(pt &a, pt &b, pt &c, pt &d, pt & cross) {
+	if (!intersect_1d(a.x, b.x, c.x, d.x) || !intersect_1d(a.y, b.y, c.y, d.y))
 		return false;
-//	res.x = -det(m.c, m.b, n.c, n.b) / zn; координаты точки пересечения прямых
-//	res.y = -det(m.a, m.c, n.a, n.c) / zn;
-	return true;
+	Line m(a, b);
+	Line n(c, d);
+	double zn = det(m.a, m.b, n.a, n.b);
+	if (abs(zn) < EPS) {
+		if (abs(m.dist(c)) > EPS || abs(n.dist(a)) > EPS)
+			return false;
+		if (b < a)  swap(a, b);
+		if (d < c)  swap(c, d);
+	//	cross = max(a, c);
+	//	right = min(b, d);
+		return true;
+	}
+	else {
+		cross.x  = -det(m.c, m.b, n.c, n.b) / zn;
+		cross.y  = -det(m.a, m.c, n.a, n.c) / zn;
+		return betw(a.x, b.x, cross.x)
+			&& betw(a.y, b.y, cross.y)
+			&& betw(c.x, d.x, cross.x)
+			&& betw(c.y, d.y, cross.y);
+	}
 }
 
-bool parallel(Line m, Line n) {
-	return abs(det(m.a, m.b, n.a, n.b)) < EPS;
+inline void convert_from_segment_to_pt(const Segment& seg, pt &a, pt &b) {
+	a = seg.first_pt;
+	b = seg.second_pt;
 }
 
-bool equivalent(Line m, Line n) {
-	return abs(det(m.a, m.b, n.a, n.b)) < EPS
-		&& abs(det(m.a, m.c, n.a, n.c)) < EPS
-		&& abs(det(m.b, m.c, n.b, n.c)) < EPS;
-}
-
-double count_angle(const Line &ln1, const Line &ln2) {
+/*double count_angle(const Line &ln1, const Line &ln2) {
 	double cos = (ln1.a*ln2.a + ln1.b*ln2.b) / (sqrt(ln1.a*ln1.a + ln1.b*ln1.b)*sqrt(ln2.a*ln2.a + ln2.b*ln2.b));
 	return acos(cos)*180.0 / Pi;
-}
-void create_graph(const vector<Line> &vec) {
-	int cnt = 0;
-	int ver1, ver2;
-	for (int i = 0;i < vec.size(); ++i)
-		for (int j = 0;j < vec.size(); ++j) 
-			if (intersect(vec[i], vec[j]))
-			{
-				
-			}
+}*/
 
+inline void norm_pt(double a, double b, double c){
+	double z = sqrt(a*a + b*b);
+	if (abs(z) > EPS)
+		a /= z, b /= z, c /= z;
+}
+
+double count_angle(pt &a, pt &b, pt &c, pt &d) {
+	double a1 = a.y - b.y, b1 = b.x - a.x, c1 = -a1*a.x - b1*b.y;
+	double a2 = c.y - d.y, b2 = d.x - c.x, c2 = -a2*c.x - b2*d.y;
+
+	norm_pt(a1, b1, c1);
+	norm_pt(a2, b2, c2);
+
+	double cos = (a1*a2 + b1*b2) / (sqrt(a1*a1 + b1*b1)*sqrt(a2*a2 + b2*b2));
+	return acos(cos)*180.0 / Pi;
+}
+
+void find_intersections(vector<Segment> &vec) {
+	for (int i = 0;i < vec.size(); ++i)
+		for (int j = 0;j < vec.size(); ++j) {
+			if (i != j) {
+				pt a, b, c, d, cross_point;
+				convert_from_segment_to_pt(vec[i], a, b);
+				convert_from_segment_to_pt(vec[j], c, d);
+				if (intersect(a, b, c, d, cross_point)) 
+					vec[i].intersection.push_back(cross_point);				
+			}
 			
-		
+		}			
 }
 
 int main() {
-	create_vector(v, N, Vintik, Shpuntik);
+
+	create_vector(v);
+
+	find_intersections(v);
+	
 	
 }
