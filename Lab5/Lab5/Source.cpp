@@ -55,14 +55,21 @@ struct Segment {
 		first_pt = pt(a, b);
 		second_pt = pt(c, d);
 	}
-	vector<pt> intersection;
+
+	vector<pair<pt,int>> intersection;
+};
+
+struct Intersection {
+	vector<int> roads;
 };
 
 vector<Segment> v;
 
+vector<vector<int>> crosses;
 pt Vintik, Shpuntik;
 
-vector < pair<int, pair<int, int>>> g;
+vector < pair<double, pair<int, int>>> g;
+
 
 void create_vector(vector<Segment> &vec) {
 	int N;
@@ -155,6 +162,32 @@ double count_angle(pt &a, pt &b, pt &c, pt &d) {
 	return acos(cos)*180.0 / Pi;
 }
 
+void find_intersections_1(vector<Segment> &vec, vector<vector<int>> &cross) {
+	for (int i = 0;i < vec.size(); ++i) {
+
+		vector <int> temp_cross;
+		for (int j = 0;j < vec.size(); ++j) {
+			if (i != j) {
+				pt a, b, c, d, cross_point;
+				convert_from_segment_to_pt(vec[i], a, b);
+				convert_from_segment_to_pt(vec[j], c, d);
+				if (intersect(a, b, c, d, cross_point))
+					if (temp_cross.size() == 0) {
+						temp_cross.push_back(j);
+						temp_cross.push_back(i);
+					}
+					else
+						temp_cross.push_back(j);						
+			}
+			
+		}
+		cross.push_back(temp_cross);
+	}
+}
+
+//vector < pair<int, pair<int, int>>> create_graph(vector<Segment> &vec) {
+
+//}
 void find_intersections(vector<Segment> &vec) {
 	for (int i = 0;i < vec.size(); ++i)
 		for (int j = 0;j < vec.size(); ++j) {
@@ -162,18 +195,64 @@ void find_intersections(vector<Segment> &vec) {
 				pt a, b, c, d, cross_point;
 				convert_from_segment_to_pt(vec[i], a, b);
 				convert_from_segment_to_pt(vec[j], c, d);
-				if (intersect(a, b, c, d, cross_point)) 
-					vec[i].intersection.push_back(cross_point);				
+				if (intersect(a, b, c, d, cross_point)) {
+					
+					vec[i].intersection.push_back(make_pair(cross_point,j));
+				}
+					
 			}
-			
-		}			
+
+		}
 }
 
+void make_crosses(vector<Segment> &vec) {
+	for (int i = 0;i < vec.size();++i) 
+		for (int j = 0;j < vec[i].intersection.size();++j)	{
+
+		}
+}
+// vector < pair<double, pair<int, int>>>
+void  make_graph(vector<Segment> &vec) {
+	for (int i = 0;i < vec.size();++i) 
+		for (int j = 0;j < vec[i].intersection.size();++j) {
+			double angle = count_angle(vec[i].first_pt, vec[i].second_pt, vec[vec[i].intersection[j].second].first_pt, vec[vec[i].intersection[j].second].second_pt);
+		}
+	
+}
+void print_crosses() {
+	for (size_t i = 0; i < v.size(); i++)
+	{
+		cout << "cross[" << i << "] intersects with roads:";
+		for (size_t j = 0; j < crosses[i].size(); j++)
+		{
+			cout << crosses[i][j] << ' ';
+		}
+		cout << endl;
+	}
+}
+
+void print_roads() {
+	for (size_t i = 0; i < v.size(); i++)
+	{
+		cout << "road[" << i << "] has following intersections: ";
+		//cout << "road[" << i << "] coordinates: " << v[i].first_pt.x << "  " << v[i].first_pt.y << "  " << v[i].second_pt.x << "  " << v[i].second_pt.y << endl;
+		for (size_t j = 0; j < v[i].intersection.size(); j++)
+		{
+			cout << v[i].intersection[j].second << ' ';
+		}
+		cout << endl;
+	}
+}
 int main() {
 
 	create_vector(v);
 
 	find_intersections(v);
 	
+	make_graph(v);
+
+	//print_roads();
+	
+	//cout << endl;
 	
 }
