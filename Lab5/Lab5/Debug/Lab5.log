@@ -1,11 +1,4 @@
 ﻿  Source.cpp
-e:\git\graphs\lab5\lab5\source.cpp(166): warning C4018: <: несоответствие типов со знаком и без знака
-e:\git\graphs\lab5\lab5\source.cpp(169): warning C4018: <: несоответствие типов со знаком и без знака
-e:\git\graphs\lab5\lab5\source.cpp(192): warning C4018: <: несоответствие типов со знаком и без знака
-e:\git\graphs\lab5\lab5\source.cpp(193): warning C4018: <: несоответствие типов со знаком и без знака
-e:\git\graphs\lab5\lab5\source.cpp(209): warning C4018: <: несоответствие типов со знаком и без знака
-e:\git\graphs\lab5\lab5\source.cpp(210): warning C4018: <: несоответствие типов со знаком и без знака
-e:\git\graphs\lab5\lab5\source.cpp(216): warning C4018: <: несоответствие типов со знаком и без знака
-e:\git\graphs\lab5\lab5\source.cpp(217): warning C4018: <: несоответствие типов со знаком и без знака
+e:\git\graphs\lab5\lab5\source.cpp(231): warning C4018: <: несоответствие типов со знаком и без знака
   Lab5.vcxproj -> E:\Git\graphs\Lab5\Debug\Lab5.exe
   Lab5.vcxproj -> E:\Git\graphs\Lab5\Debug\Lab5.pdb (Full PDB)

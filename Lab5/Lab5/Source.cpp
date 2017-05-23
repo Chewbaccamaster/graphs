@@ -61,7 +61,7 @@ struct Segment {
 	vector<int> intersections;
 };
 
-
+vector<pt> cross_vector;
 vector<Segment> v;
 map <pt, int> cross_list;
 pt Vintik, Shpuntik;
@@ -220,11 +220,18 @@ void create_start_end_crosses(vector<Segment> &vec, map<pt, int> &crosses) {
 	crosses.emplace(Shpuntik, crosses.size());
 }
 
-void sort_roads_intersections(vector<Segment> &vec, map<pt,int> &crosses) {
+void convert_from_map_to_cross_vector(map<pt, int> &crosses, vector<pt> &intersections) {
+	intersections.resize(crosses.size());
+	for (auto &i: crosses) {
+		intersections[i.second] = i.first;
+	}
+}
+
+void sort_roads_intersections(vector<Segment> &vec, vector<pt> crosses_vector) {
 	for (int i = 0;i < vec.size();++i) {
-		sort(vec[i].intersections.begin(), vec[i].intersections.end(), [&](int t1, int t2) {
-			return (crosses)
-		}
+		sort(vec[i].intersections.begin(), vec[i].intersections.end(), [&](int a, int b) {
+			return (crosses_vector[a] < crosses_vector[b]);
+		});
 	}
 }
 // vector < pair<double, pair<int, int>>>
@@ -250,8 +257,12 @@ int main() {
 	
 	create_start_end_crosses(v, cross_list);
 
+	convert_from_map_to_cross_vector(cross_list, cross_vector);
+
+	sort_roads_intersections(v, cross_vector);
 	//print_roads();
 	
 	//cout << endl;
+	return EXIT_SUCCESS;
 	
 }
