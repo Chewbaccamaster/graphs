@@ -185,11 +185,18 @@ void find_intersections(vector<Segment> &vec, map <pt, int> &crosses) {
 		}
 	}
 }
-void create_start_end_crosses(vector<Segment> &vec, map<pt, int> &crosses) {
+
+void delete_same_crosses(vector<Segment> &vec) {
+	for (int i = 0;i < vec.size();++i)
+		sort(vec[i].intersections.begin(), vec[i].intersections.end());
+	for (int i = 0;i < vec.size();++i)
+		vec[i].intersections.resize(unique(vec[i].intersections.begin(), vec[i].intersections.end()) - vec[i].intersections.begin());
+}
+/*void create_start_end_crosses(vector<Segment> &vec, map<pt, int> &crosses) {
 	crosses.emplace(Vintik, crosses.size());
 	crosses.emplace(Shpuntik, crosses.size());
 }
-
+*/
 void convert_from_map_to_cross_vector(map<pt, int> &crosses, vector<pt> &intersections) {
 	intersections.resize(crosses.size());
 	for (auto &i: crosses) {
@@ -206,7 +213,10 @@ void sort_roads_intersections(vector<Segment> &vec, vector<pt> crosses_vector) {
 }
 // vector < pair<double, pair<int, int>>>
 
+void create_graph(vector <Segment> &vec, vector<pt> &crosses_vector, map<pt, int> &crosses) {
 
+	
+}
 void print_roads() {
 	for (size_t i = 0; i < v.size(); i++)
 	{
@@ -224,6 +234,8 @@ int main() {
 	create_vector(v);
 
 	find_intersections(v,cross_list);
+
+	delete_same_crosses(v);
 	
 //	create_start_end_crosses(v, cross_list);
 
