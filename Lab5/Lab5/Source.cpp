@@ -119,7 +119,7 @@ bool intersect(pt &a, pt &b, pt &c, pt &d, pt & cross) {
 			return false;
 		if (b < a)  swap(a, b);
 		if (d < c)  swap(c, d);
-	//	cross = max(a, c);
+		cross = max(a, c);
 	//	right = min(b, d);
 		return true;
 	}
@@ -138,10 +138,6 @@ inline void convert_from_segment_to_pt(const Segment& seg, pt &a, pt &b) {
 	b = seg.second_pt;
 }
 
-/*double count_angle(const Line &ln1, const Line &ln2) {
-	double cos = (ln1.a*ln2.a + ln1.b*ln2.b) / (sqrt(ln1.a*ln1.a + ln1.b*ln1.b)*sqrt(ln2.a*ln2.a + ln2.b*ln2.b));
-	return acos(cos)*180.0 / Pi;
-}*/
 
 inline void norm_pt(double a, double b, double c){
 	double z = sqrt(a*a + b*b);
@@ -160,32 +156,6 @@ double count_angle(pt &a, pt &b, pt &c, pt &d) {
 	return acos(cos)*180.0 / Pi;
 }
 
-/*void find_intersections_1(vector<Segment> &vec, vector<vector<int>> &cross) {
-	for (int i = 0;i < vec.size(); ++i) {
-
-		vector <int> temp_cross;
-		for (int j = 0;j < vec.size(); ++j) {
-			if (i != j) {
-				pt a, b, c, d, cross_point;
-				convert_from_segment_to_pt(vec[i], a, b);
-				convert_from_segment_to_pt(vec[j], c, d);
-				if (intersect(a, b, c, d, cross_point))
-					if (temp_cross.size() == 0) {
-						temp_cross.push_back(j);
-						temp_cross.push_back(i);
-					}
-					else
-						temp_cross.push_back(j);						
-			}
-			
-		}
-		cross.push_back(temp_cross);
-	}
-}
-*/
-//vector < pair<int, pair<int, int>>> create_graph(vector<Segment> &vec) {
-
-//}
 
 
 void find_intersections(vector<Segment> &vec, map <pt, int> &crosses) {
@@ -255,11 +225,11 @@ int main() {
 
 	find_intersections(v,cross_list);
 	
-	create_start_end_crosses(v, cross_list);
+//	create_start_end_crosses(v, cross_list);
 
-	convert_from_map_to_cross_vector(cross_list, cross_vector);
+//	convert_from_map_to_cross_vector(cross_list, cross_vector);
 
-	sort_roads_intersections(v, cross_vector);
+//	sort_roads_intersections(v, cross_vector);
 	//print_roads();
 	
 	//cout << endl;
