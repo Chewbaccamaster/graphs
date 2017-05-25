@@ -228,7 +228,7 @@ void sort_roads_intersections(vector<Road> &vec, vector<pt> crosses_vector) {
 }
 
 void create_graph(vector <Road> &vec,  vector<vector<int>> &g) {
-	g.resize(vec.size());
+	g.resize(cross_list.size());
 	for (int i = 0; i < vec.size();++i) {
 		for (int j = 0; j < vec[i].intersections.size() - 1;++j) {
 			int v = vec[i].intersections[j];
@@ -239,17 +239,13 @@ void create_graph(vector <Road> &vec,  vector<vector<int>> &g) {
 	}
 }
 
-void dijkstra(const vector<pt> &crosses, vector<vector<int>> &g, int start, int end) {
+double dijkstra(const vector<pt> &crosses, vector<vector<int>> &g, int start, int end) {
 	int n = crosses.size();
-	vector<vector<double>> d;
-	vector<vector<bool>> used;
-	d.resize(n);
-	used.resize(n);
-	for (int i = 0; i < n;++i)
-		fill(d[i].begin(), d[i].end(), INF);
+	vector<vector<double>> d(n, vector<double>(n,INF));
+	vector<vector<bool>> used(n, vector<bool>(n, false));
+
 	
-	d.resize(n);
-	used.resize(n);
+	
 	priority_queue<pair<double, pair<int, int>>> q;
 
 	for (int i = 0; i < g[start].size();++i) {
@@ -270,17 +266,34 @@ void dijkstra(const vector<pt> &crosses, vector<vector<int>> &g, int start, int 
 
 		for (int j = 0; j < g[road.second].size();++j) {
 			int to = g[road.second][j];
+
 			if (to == road.first)
 				continue;
+
 			if(used[road.second][to])
 				continue;
-			pt a, b, c, d;
-			a = crosses[road.first];
 			
-			//double angle =count_angle()
+			pt pt1, pt2, pt3, pt4;
+			pt1 = crosses[road.first];
+			pt2 = crosses[road.second];
+			pt3 = crosses[road.second];
+			pt4 = crosses[to];
+
+			double angle = count_angle(pt1, pt2, pt3, pt4);
+			double temp = d[road.second][road.first] + angle;
+			double tempdistance = d[to][road.second];
+
+			if (tempdistance > temp) {
+				tempdistance = temp;
+				q.emplace(-tempdistance, make_pair(road.second, to));
+			}
 
 		}
 	}
+	double result = *min_element(d[end].begin(), d[end].end());
+	if (result < INF)
+		return result;
+	else return -1;
 	
 }
 
@@ -296,6 +309,8 @@ void print_roads() {
 		cout << endl;
 	}
 }
+
+double result;
 int main() {
 
 	create_vector(v);
@@ -311,6 +326,10 @@ int main() {
 	sort_roads_intersections(v, cross_vector);
 
 	create_graph(v, adj);
+
+	result = dijkstra(cross_vector, adj, cross_list.size() - 2, cross_list.size() - 1);
+
+	fout << result;
 
 	//	convert_from_map_to_cross_vector(cross_list, cross_vector);
 
