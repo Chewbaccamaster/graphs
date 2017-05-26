@@ -43,8 +43,8 @@ void create_vector(vector<int> &grid, vector<int> &pins, int& N, int& K) {
 		pins[i] += temp + N*N;
 	}
 }
-void add_edge(int a, int b, int cap,vector<edge> &e, vector<vector<int>> &g) {
-	edge e1 = { a, b, cap, 0 };
+void add_edge(int a, int b, vector<edge> &e, vector<vector<int>> &g) {
+	edge e1 = { a, b, 1, 0 };
 	edge e2 = { b, a, 0, 0 };
 	g[a].push_back((int)e.size());
 	e.push_back(e1);
@@ -52,26 +52,26 @@ void add_edge(int a, int b, int cap,vector<edge> &e, vector<vector<int>> &g) {
 	e.push_back(e2);
 }
 
-void check_for_border_and_add(int i,int border, int a, int b, int cap, vector<edge> &e, vector<vector<int>> &g) {
+void check_for_border_and_add(int i,int border, int a, int b, vector<edge> &e, vector<vector<int>> &g) {
 	if (i > border)
-		add_edge(a, b, cap, e, g);
+		add_edge(a, b, e, g);
 }
 void create_graph(vector<vector<int>> &g, vector<edge> &e, vector<int> &grid, vector<int> &pins, int &N, int &K) {
 	g.resize(2 * N*N + 2);
 	for (int i = 0;i < N;++i) {
 		for (int j = 0;j < N;++j) {
 			int low_layer = j + i*N + N*N;
-			add_edge(j + i*N, low_layer, 1, e, g);
-			check_for_border_and_add(i, 0, low_layer, j + (i - 1)*N, 0, e, g);
-			check_for_border_and_add(N, i + 1, low_layer, j + (i + 1)*N, 0, e, g);
-			check_for_border_and_add(j, 0, low_layer, j - 1 + i*N, 0, e, g);
-			check_for_border_and_add(N, j + 1, low_layer, j + 1 + i*N, 0, e, g);		
+			add_edge(j + i*N, low_layer, e, g);
+			check_for_border_and_add(i, 0, low_layer, j + (i - 1)*N,  e, g);
+			check_for_border_and_add(N, i + 1, low_layer, j + (i + 1)*N, e, g);
+			check_for_border_and_add(j, 0, low_layer, j - 1 + i*N,  e, g);
+			check_for_border_and_add(N, j + 1, low_layer, j + 1 + i*N,  e, g);		
 		}
 	}
 		
 	for (int i = 0;i < K;++i) {
-		add_edge(2 * N*N, grid[i], 0, e, g);
-		add_edge(pins[i], 2 * N*N + 1, 0, e, g);
+		add_edge(2 * N*N, grid[i], e, g);
+		add_edge(pins[i], 2 * N*N + 1, e, g);
 	}
 }
 
@@ -137,7 +137,7 @@ int main() {
 
 	int source = 2 * N*N;
 	int endsource = 2 * N*N + 1;
-	int res = dinic(source,endsource, g, e);
+	int flow_weight = dinic(source,endsource, g, e);
 
 	return EXIT_SUCCESS;
 }
