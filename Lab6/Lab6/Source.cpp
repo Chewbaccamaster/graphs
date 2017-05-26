@@ -62,10 +62,10 @@ void create_graph(vector<vector<int>> &g, vector<edge> &e, vector<int> &grid, ve
 		for (int j = 0;j < N;++j) {
 			int low_layer = j + i*N + N*N;
 			add_edge(j + i*N, low_layer, e, g);
-			check_for_border_and_add(i, 0, low_layer, j + (i - 1)*N,  e, g);
+			check_for_border_and_add(i, 0, low_layer, j + (i - 1)*N, e, g);
 			check_for_border_and_add(N, i + 1, low_layer, j + (i + 1)*N, e, g);
-			check_for_border_and_add(j, 0, low_layer, j - 1 + i*N,  e, g);
-			check_for_border_and_add(N, j + 1, low_layer, j + 1 + i*N,  e, g);		
+			check_for_border_and_add(j, 0, low_layer, j - 1 + i*N, e, g);
+			check_for_border_and_add(N, j + 1, low_layer, j + 1 + i*N, e, g);
 		}
 	}
 		
@@ -102,7 +102,7 @@ int dfs(int v, int flow, int t, vector<int>& ptr, vector<int> &d, vector<vector<
 		int id = g[v][ptr[v]],
 			to = e[id].b;
 		if (d[to] != d[v] + 1)  continue;
-		int pushed = dfs(to, min(flow, e[id].cap - e[id].flow),t,ptr,d,g,e);
+		int pushed = dfs(to, min(flow, e[id].cap - e[id].flow), t, ptr, d, g, e);
 		if (pushed) {
 			e[id].flow += pushed;
 			e[id ^ 1].flow -= pushed;

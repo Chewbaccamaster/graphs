@@ -327,13 +327,10 @@ int main() {
 
 	create_graph(v, adj);
 
-	result = dijkstra(cross_vector, adj, cross_list.size() - 2, cross_list.size() - 1);
+	result = dijkstra(cross_vector, adj, cross_vector.size() - 2, cross_list.size() - 1);
 
 	fout << result;
 
-	//	convert_from_map_to_cross_vector(cross_list, cross_vector);
-
-	//	sort_roads_intersections(v, cross_vector);
 	//print_roads();
 
 	//cout << endl;
