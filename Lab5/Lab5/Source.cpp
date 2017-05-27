@@ -149,8 +149,10 @@ inline bool compare(double a, double b) {
 }
 double count_angle(pt &a, pt &b, pt &c, pt &d) {
 	Line ln1 = Line(a, b), ln2 = Line(c, d);
+
 	double angle = (ln1.a*ln2.a + ln1.b*ln2.b) / ((sqrt(ln1.a*ln1.a + ln1.b*ln1.b))*sqrt(ln2.a*ln2.a + ln2.b*ln2.b));
-	//double cos = (ln.a1*a2 + b1*b2) / (sqrt(a1*a1 + b1*b1)*sqrt(a2*a2 + b2*b2));
+	
+
 	if (compare(angle,1.0))
 		angle = 1.0;
 	double result = acos(angle) / Pi*180.0;
