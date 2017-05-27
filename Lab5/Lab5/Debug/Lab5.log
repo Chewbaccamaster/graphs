@@ -1,10 +1,11 @@
 ﻿  Source.cpp
-e:\git\graphs\lab5\lab5\source.cpp(188): warning C4018: <: несоответствие типов со знаком и без знака
-e:\git\graphs\lab5\lab5\source.cpp(190): warning C4018: <: несоответствие типов со знаком и без знака
-e:\git\graphs\lab5\lab5\source.cpp(223): warning C4018: <: несоответствие типов со знаком и без знака
-e:\git\graphs\lab5\lab5\source.cpp(232): warning C4018: <: несоответствие типов со знаком и без знака
+e:\git\graphs\lab5\lab5\source.cpp(189): warning C4018: <: несоответствие типов со знаком и без знака
+e:\git\graphs\lab5\lab5\source.cpp(191): warning C4018: <: несоответствие типов со знаком и без знака
+e:\git\graphs\lab5\lab5\source.cpp(224): warning C4018: <: несоответствие типов со знаком и без знака
 e:\git\graphs\lab5\lab5\source.cpp(233): warning C4018: <: несоответствие типов со знаком и без знака
-e:\git\graphs\lab5\lab5\source.cpp(251): warning C4018: <: несоответствие типов со знаком и без знака
-e:\git\graphs\lab5\lab5\source.cpp(267): warning C4018: <: несоответствие типов со знаком и без знака
+e:\git\graphs\lab5\lab5\source.cpp(234): warning C4018: <: несоответствие типов со знаком и без знака
+e:\git\graphs\lab5\lab5\source.cpp(252): warning C4018: <: несоответствие типов со знаком и без знака
+e:\git\graphs\lab5\lab5\source.cpp(268): warning C4018: <: несоответствие типов со знаком и без знака
+cl : командная строка warning D9028: сбой минимальной повторной сборки, возврат к обычной сборке
   Lab5.vcxproj -> E:\Git\graphs\Lab5\Debug\Lab5.exe
   Lab5.vcxproj -> E:\Git\graphs\Lab5\Debug\Lab5.pdb (Full PDB)

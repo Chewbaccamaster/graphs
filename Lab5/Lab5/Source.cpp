@@ -9,7 +9,7 @@ using namespace std;
 
 const double Pi = atan(1) * 4;
 const double EPS = 1E-9;
-#define INF 1000000000
+#define INF 2e9
 
 ifstream fin("input.txt");
 ofstream fout("output.txt");
@@ -144,16 +144,17 @@ inline void norm_pt(double a, double b, double c) {
 	if (abs(z) > EPS)
 		a /= z, b /= z, c /= z;
 }
-
+inline bool compare(double a, double b) {
+	return abs(b - a) <= EPS;
+}
 double count_angle(pt &a, pt &b, pt &c, pt &d) {
-	double a1 = a.y - b.y, b1 = b.x - a.x, c1 = -a1*a.x - b1*b.y;
-	double a2 = c.y - d.y, b2 = d.x - c.x, c2 = -a2*c.x - b2*d.y;
-
-	norm_pt(a1, b1, c1);
-	norm_pt(a2, b2, c2);
-
-	double cos = (a1*a2 + b1*b2) / (sqrt(a1*a1 + b1*b1)*sqrt(a2*a2 + b2*b2));
-	return acos(cos)*180.0 / Pi;
+	Line ln1 = Line(a, b), ln2 = Line(c, d);
+	double angle = (ln1.a*ln2.a + ln1.b*ln2.b) / ((sqrt(ln1.a*ln1.a + ln1.b*ln1.b))*sqrt(ln2.a*ln2.a + ln2.b*ln2.b));
+	//double cos = (ln.a1*a2 + b1*b2) / (sqrt(a1*a1 + b1*b1)*sqrt(a2*a2 + b2*b2));
+	if (compare(angle,1.0))
+		angle = 1.0;
+	double result = acos(angle) / Pi*180.0;
+	return (compare(result, 180.0)) ? 2e9 : result;
 }
 
 void find_intersections(vector<Road> &vec, map <pt, int> &crosses) {
@@ -192,24 +193,24 @@ void delete_same_crosses(vector<Road> &vec) {
 }
 
 void create_start_end_crosses(vector<Road> &vec, map<pt, int> &crosses) {
-	
-crosses.emplace(Vintik, crosses.size());
-for (size_t i = 0; i < vec.size(); ++i) {
-	pt a, b;
-	convert_from_segment_to_pt(vec[i], a, b);
-	Line ln = Line(a, b);
-	if ((ln.a*Vintik.x + ln.b*Vintik.y + ln.c) == 0)
-		vec[i].intersections.push_back(crosses.size() - 1);
-}
 
-crosses.emplace(Shpuntik, crosses.size());
-for (size_t i = 0; i < vec.size(); ++i) {
-	pt a, b;
-	convert_from_segment_to_pt(vec[i], a, b);
-	Line ln = Line(a, b);
-	if ((ln.a*Shpuntik.x + ln.b*Shpuntik.y + ln.c) == 0)
-		vec[i].intersections.push_back(crosses.size() - 1);
-}
+	crosses.emplace(Vintik, crosses.size());
+	for (size_t i = 0; i < vec.size(); ++i) {
+		pt a, b;
+		convert_from_segment_to_pt(vec[i], a, b);
+		Line ln = Line(a, b);
+		if ((ln.a*Vintik.x + ln.b*Vintik.y + ln.c) == 0)
+			vec[i].intersections.push_back(crosses.size() - 1);
+	}
+
+	crosses.emplace(Shpuntik, crosses.size());
+	for (size_t i = 0; i < vec.size(); ++i) {
+		pt a, b;
+		convert_from_segment_to_pt(vec[i], a, b);
+		Line ln = Line(a, b);
+		if ((ln.a*Shpuntik.x + ln.b*Shpuntik.y + ln.c) == 0)
+			vec[i].intersections.push_back(crosses.size() - 1);
+	}
 }
 
 void convert_from_map_to_cross_vector(map<pt, int> &crosses, vector<pt> &intersections) {
@@ -227,7 +228,7 @@ void sort_roads_intersections(vector<Road> &vec, vector<pt> crosses_vector) {
 	}
 }
 
-void create_graph(vector <Road> &vec,  vector<vector<int>> &g) {
+void create_graph(vector <Road> &vec, vector<vector<int>> &g) {
 	g.resize(cross_list.size());
 	for (int i = 0; i < vec.size();++i) {
 		for (int j = 0; j < vec[i].intersections.size() - 1;++j) {
@@ -241,11 +242,11 @@ void create_graph(vector <Road> &vec,  vector<vector<int>> &g) {
 
 double dijkstra(const vector<pt> &crosses, vector<vector<int>> &g, int start, int end) {
 	int n = crosses.size();
-	vector<vector<double>> d(n, vector<double>(n,INF));
+	vector<vector<double>> d(n, vector<double>(n, INF));
 	vector<vector<bool>> used(n, vector<bool>(n, false));
 
-	
-	
+
+
 	priority_queue<pair<double, pair<int, int>>> q;
 
 	for (int i = 0; i < g[start].size();++i) {
@@ -257,7 +258,7 @@ double dijkstra(const vector<pt> &crosses, vector<vector<int>> &g, int start, in
 		pair<double, pair<int, int>> v = q.top();
 		q.pop();
 
-		pair<int,int> road = v.second;
+		pair<int, int> road = v.second;
 		if (used[road.second][road.first]) //if try to go reverse
 			continue;
 
@@ -270,9 +271,9 @@ double dijkstra(const vector<pt> &crosses, vector<vector<int>> &g, int start, in
 			if (to == road.first)
 				continue;
 
-			if(used[road.second][to])
+			if (used[road.second][to])
 				continue;
-			
+
 			pt pt1, pt2, pt3, pt4;
 			pt1 = crosses[road.first];
 			pt2 = crosses[road.second];
@@ -294,7 +295,7 @@ double dijkstra(const vector<pt> &crosses, vector<vector<int>> &g, int start, in
 	if (result < INF)
 		return result;
 	else return -1;
-	
+
 }
 
 void print_roads() {

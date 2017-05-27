@@ -52,7 +52,7 @@ void add_edge(int a, int b, vector<edge> &e, vector<vector<int>> &g) {
 	e.push_back(e2);
 }
 
-void check_for_border_and_add(int i,int border, int a, int b, vector<edge> &e, vector<vector<int>> &g) {
+void check_for_border_and_add(int i, int border, int a, int b, vector<edge> &e, vector<vector<int>> &g) {
 	if (i > border)
 		add_edge(a, b, e, g);
 }
@@ -68,7 +68,7 @@ void create_graph(vector<vector<int>> &g, vector<edge> &e, vector<int> &grid, ve
 			check_for_border_and_add(N, j + 1, low_layer, j + 1 + i*N, e, g);
 		}
 	}
-		
+
 	for (int i = 0;i < K;++i) {
 		add_edge(2 * N*N, grid[i], e, g);
 		add_edge(pins[i], 2 * N*N + 1, e, g);
@@ -95,7 +95,7 @@ bool bfs(int s, int t, vector<int> &d, vector<int> &q, vector<vector<int>> &g, v
 	return d[t] != -1;
 }
 
-int dfs(int v, int flow, int t, vector<int>& ptr, vector<int> &d, vector<vector<int>> &g, vector<edge>& e ) {
+int dfs(int v, int flow, int t, vector<int>& ptr, vector<int> &d, vector<vector<int>> &g, vector<edge>& e) {
 	if (!flow)  return 0;
 	if (v == t)  return flow;
 	for (; ptr[v]<(int)g[v].size(); ++ptr[v]) {
@@ -126,6 +126,26 @@ int dinic(int& s, int& t, vector<vector<int>>& g, vector<edge> & e) {
 	return flow;
 }
 
+void print(int &start, int &end, vector<vector<int>> &g, int &K, int &N, int& flow_weight, vector<edge> &e) {
+	if (flow_weight != K) {
+		fout << -1 << endl;
+		return;
+	}
+	for (int i = 0; i < g[start].size(); ++i) {
+		int temp = e[g[start][i]].b;
+		while (temp != end)
+			for (int j = 0;j < g[temp].size();++j) {
+				if (e[g[temp][j]].flow == 1)
+				{
+					if (e[g[temp][j]].a < N*N)
+						fout << e[g[temp][j]].a << " ";
+					temp = e[g[temp][j]].b;
+				}
+
+			}
+		fout << endl;
+	}
+}
 
 int main() {
 	vector<int> grid, pins;
@@ -137,7 +157,9 @@ int main() {
 
 	int source = 2 * N*N;
 	int endsource = 2 * N*N + 1;
-	int flow_weight = dinic(source,endsource, g, e);
+	int flow_weight = dinic(source, endsource, g, e);
+
+	print(source, endsource, g, K, N, flow_weight, e);
 
 	return EXIT_SUCCESS;
 }
