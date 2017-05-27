@@ -79,10 +79,10 @@ void create_vector(vector<Road> &vec) {
 		fin >> x1 >> y1 >> x2 >> y2;
 
 
-		if (x1 > x2) {
-			swap(x1, x2);
-			swap(y1, y2);
-		}
+	//	if (x1 > x2) {
+		//	swap(x1, x2);
+			//swap(y1, y2);
+	//	}
 		road = Road(x1, y1, x2, y2);
 		// (x1,y1)  (x2,y2)
 		// x-x1/x2-x1  = y-y1/y2-y1
@@ -151,8 +151,6 @@ double count_angle(pt &a, pt &b, pt &c, pt &d) {
 	Line ln1 = Line(a, b), ln2 = Line(c, d);
 
 	double angle = (ln1.a*ln2.a + ln1.b*ln2.b) / ((sqrt(ln1.a*ln1.a + ln1.b*ln1.b))*sqrt(ln2.a*ln2.a + ln2.b*ln2.b));
-	
-
 	if (compare(angle,1.0))
 		angle = 1.0;
 	double result = acos(angle) / Pi*180.0;
@@ -231,7 +229,7 @@ void sort_roads_intersections(vector<Road> &vec, vector<pt> crosses_vector) {
 }
 
 void create_graph(vector <Road> &vec, vector<vector<int>> &g) {
-	g.resize(cross_list.size());
+	g.resize(cross_vector.size());
 	for (int i = 0; i < vec.size();++i) {
 		for (int j = 0; j < vec[i].intersections.size() - 1;++j) {
 			int v = vec[i].intersections[j];
@@ -251,9 +249,9 @@ double dijkstra(const vector<pt> &crosses, vector<vector<int>> &g, int start, in
 
 	priority_queue<pair<double, pair<int, int>>> q;
 
-	for (int i = 0; i < g[start].size();++i) {
-		d[g[start][i]][start] = 0.0;
-		q.emplace(0.0, make_pair(start, g[start][i]));
+	for (auto road : g[start]) {
+		d[road][start] = 0.0;
+		q.emplace(0.0, make_pair(start, road));
 	}
 
 	while (!q.empty()) {
@@ -284,7 +282,7 @@ double dijkstra(const vector<pt> &crosses, vector<vector<int>> &g, int start, in
 
 			double angle = count_angle(pt1, pt2, pt3, pt4);
 			double temp = d[road.second][road.first] + angle;
-			double tempdistance = d[to][road.second];
+			double& tempdistance = d[to][road.second];
 
 			if (tempdistance > temp) {
 				tempdistance = temp;
@@ -333,6 +331,8 @@ int main() {
 	result = dijkstra(cross_vector, adj, cross_vector.size() - 2, cross_list.size() - 1);
 
 	fout << result;
+
+	
 
 	//print_roads();
 
