@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 #include <iostream>
 #include <stdio.h>
 #include <fstream>
@@ -22,25 +22,23 @@ void create_vector(vector<int> &grid, vector<int> &pins, int& N, int& K) {
 	pins.resize(K);
 
 	for (int i = 0; i < K; ++i) {
-		int temp;
-		fin >> temp;
-		grid[i] = temp*N;
+		fin >> grid[i];
 	}
 	for (int i = 0;i < K;++i) {
 		int temp;
 		fin >> temp;
+		grid[i] *= N;
 		grid[i] += temp;
 	}
 
-	for (int i = 0;i < K;++i) {
-		int temp;
-		fin >> temp;
-		pins[i] = temp*N;
+	for (int i = 0;i < K;++i) {	
+		fin >> pins[i];
 	}
 
 	for (int i = 0;i < K;++i) {
 		int temp;
 		fin >> temp;
+		pins[i] *= N;
 		pins[i] += temp + N*N;
 	}
 }
@@ -163,3 +161,4 @@ int main() {
 	print(source, endsource, g, K, N, flow_weight, e);
 
 	return EXIT_SUCCESS;
+}

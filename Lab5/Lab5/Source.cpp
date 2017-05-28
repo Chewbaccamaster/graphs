@@ -79,10 +79,10 @@ void create_vector(vector<Road> &vec) {
 		fin >> x1 >> y1 >> x2 >> y2;
 
 
-	//	if (x1 > x2) {
-		//	swap(x1, x2);
-			//swap(y1, y2);
-	//	}
+	/*	if (x1 > x2) {
+			swap(x1, x2);
+			swap(y1, y2);
+		}*/
 		road = Road(x1, y1, x2, y2);
 		// (x1,y1)  (x2,y2)
 		// x-x1/x2-x1  = y-y1/y2-y1
@@ -161,12 +161,12 @@ void find_intersections(vector<Road> &vec, map <pt, int> &crosses) {
 	int n = vec.size();
 	int cnt = 0;
 	for (int i = 0;i < n;++i) {
-
+		auto& road1 = vec[i];
 		for (int j = i + 1;j < n;++j) {
-
+			auto& road2 = vec[j];
 			pt a, b, c, d, cross_point;
-			convert_from_segment_to_pt(vec[i], a, b);
-			convert_from_segment_to_pt(vec[j], c, d);
+			convert_from_segment_to_pt(road1, a, b);
+			convert_from_segment_to_pt(road2, c, d);
 			if (intersect(a, b, c, d, cross_point)) {
 				auto temp = crosses.find(cross_point);
 				if (temp == crosses.end()) {
@@ -199,7 +199,7 @@ void create_start_end_crosses(vector<Road> &vec, map<pt, int> &crosses) {
 		pt a, b;
 		convert_from_segment_to_pt(vec[i], a, b);
 		Line ln = Line(a, b);
-		if ((ln.a*Vintik.x + ln.b*Vintik.y + ln.c) == 0)
+		if (abs(ln.a*Vintik.x + ln.b*Vintik.y + ln.c) <EPS)
 			vec[i].intersections.push_back(crosses.size() - 1);
 	}
 
@@ -208,7 +208,7 @@ void create_start_end_crosses(vector<Road> &vec, map<pt, int> &crosses) {
 		pt a, b;
 		convert_from_segment_to_pt(vec[i], a, b);
 		Line ln = Line(a, b);
-		if ((ln.a*Shpuntik.x + ln.b*Shpuntik.y + ln.c) == 0)
+		if (abs(ln.a*Shpuntik.x + ln.b*Shpuntik.y + ln.c) < EPS)
 			vec[i].intersections.push_back(crosses.size() - 1);
 	}
 }
@@ -229,8 +229,10 @@ void sort_roads_intersections(vector<Road> &vec, vector<pt> crosses_vector) {
 }
 
 void create_graph(vector <Road> &vec, vector<vector<int>> &g) {
-	g.resize(cross_vector.size());
+	g.resize(cross_list.size());
 	for (int i = 0; i < vec.size();++i) {
+		if (!vec[i].intersections.size())
+			continue;
 		for (int j = 0; j < vec[i].intersections.size() - 1;++j) {
 			int v = vec[i].intersections[j];
 			int to = vec[i].intersections[j + 1];
@@ -244,9 +246,6 @@ double dijkstra(const vector<pt> &crosses, vector<vector<int>> &g, int start, in
 	int n = crosses.size();
 	vector<vector<double>> d(n, vector<double>(n, INF));
 	vector<vector<bool>> used(n, vector<bool>(n, false));
-
-
-
 	priority_queue<pair<double, pair<int, int>>> q;
 
 	for (auto road : g[start]) {
@@ -332,11 +331,15 @@ int main() {
 
 	fout << result;
 
-	
+	/*for (size_t i = 0; i < cross_vector.size(); i++)
+	{
+		cout << cross_vector[i].x << ' ' << cross_vector[i].y << endl;
+	}
+	*/
 
 	//print_roads();
 
 	//cout << endl;
-	return EXIT_SUCCESS;
+		return EXIT_SUCCESS;
 
 }

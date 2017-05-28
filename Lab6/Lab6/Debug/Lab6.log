@@ -1,5 +1,6 @@
 ﻿  Source.cpp
-e:\git\graphs\lab6\lab6\source.cpp(134): warning C4018: <: несоответствие типов со знаком и без знака
+e:\git\graphs\lab6\lab6\source.cpp(37): warning C4101: temp: неиспользованная локальная переменная
 e:\git\graphs\lab6\lab6\source.cpp(137): warning C4018: <: несоответствие типов со знаком и без знака
+e:\git\graphs\lab6\lab6\source.cpp(140): warning C4018: <: несоответствие типов со знаком и без знака
   Lab6.vcxproj -> E:\Git\graphs\Lab6\Debug\Lab6.exe
   Lab6.vcxproj -> E:\Git\graphs\Lab6\Debug\Lab6.pdb (Full PDB)
