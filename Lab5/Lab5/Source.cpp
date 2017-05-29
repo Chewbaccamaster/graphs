@@ -144,29 +144,29 @@ inline void norm_pt(double a, double b, double c) {
 	if (abs(z) > EPS)
 		a /= z, b /= z, c /= z;
 }
-inline bool compare(double a, double b) {
-	return abs(b - a) <= EPS;
-}
+
 double count_angle(pt &a, pt &b, pt &c, pt &d) {
 	Line ln1 = Line(a, b), ln2 = Line(c, d);
 
 	double angle = (ln1.a*ln2.a + ln1.b*ln2.b) / ((sqrt(ln1.a*ln1.a + ln1.b*ln1.b))*sqrt(ln2.a*ln2.a + ln2.b*ln2.b));
-	if (compare(angle,1.0))
+	if (abs(angle-1.0)<EPS)
 		angle = 1.0;
 	double result = acos(angle) / Pi*180.0;
-	return (compare(result, 180.0)) ? 2e9 : result;
+	if (abs(result - 180.0) < EPS)
+		return INF;
+	else return result;
 }
 
 void find_intersections(vector<Road> &vec, map <pt, int> &crosses) {
 	int n = vec.size();
 	int cnt = 0;
 	for (int i = 0;i < n;++i) {
-		auto& road1 = vec[i];
+		
 		for (int j = i + 1;j < n;++j) {
-			auto& road2 = vec[j];
+			
 			pt a, b, c, d, cross_point;
-			convert_from_segment_to_pt(road1, a, b);
-			convert_from_segment_to_pt(road2, c, d);
+			convert_from_segment_to_pt(vec[i], a, b);
+			convert_from_segment_to_pt(vec[j], c, d);
 			if (intersect(a, b, c, d, cross_point)) {
 				auto temp = crosses.find(cross_point);
 				if (temp == crosses.end()) {
@@ -317,9 +317,9 @@ int main() {
 
 	find_intersections(v, cross_list);
 
-	delete_same_crosses(v);
-
 	create_start_end_crosses(v, cross_list);
+
+	delete_same_crosses(v);
 
 	convert_from_map_to_cross_vector(cross_list, cross_vector);
 
@@ -331,15 +331,15 @@ int main() {
 
 	fout << result;
 
-	/*for (size_t i = 0; i < cross_vector.size(); i++)
-	{
-		cout << cross_vector[i].x << ' ' << cross_vector[i].y << endl;
-	}
-	*/
+	fout.close();
 
+/*	pt a, b;
+	convert_from_segment_to_pt(v[22], a, b);
+	Line ln = Line(a, b);
+	abs(ln.a*Shpuntik.x + ln.b*Shpuntik.y + ln.c);
 	//print_roads();
 
-	//cout << endl;
+	//cout << endl;*/
 		return EXIT_SUCCESS;
 
 }
