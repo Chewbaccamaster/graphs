@@ -93,8 +93,7 @@ void create_vector(vector<Road> &vec) {
 
 
 	fin >> Vintik.x >> Vintik.y >> Shpuntik.x >> Shpuntik.y;
-	//v1.push_back(Vintik); // Vintik
-	//	v2.push_back(Shpuntik); // Shpuntik
+
 }
 
 #define det(a,b,c,d)  (a*d-b*c)
@@ -199,7 +198,7 @@ void create_start_end_crosses(vector<Road> &vec, map<pt, int> &crosses) {
 		pt a, b;
 		convert_from_segment_to_pt(vec[i], a, b);
 		Line ln = Line(a, b);
-		if (abs(ln.a*Vintik.x + ln.b*Vintik.y + ln.c) <EPS)
+		if (abs(ln.a*Vintik.x + ln.b*Vintik.y + ln.c) < EPS) //|| Vintik.x==vec[i].first_pt.x && Vintik.y==vec[i].first_pt.y || Vintik.x == vec[i].second_pt.x && Vintik.y == vec[i].second_pt.y)
 			vec[i].intersections.push_back(crosses.size() - 1);
 	}
 
@@ -208,7 +207,7 @@ void create_start_end_crosses(vector<Road> &vec, map<pt, int> &crosses) {
 		pt a, b;
 		convert_from_segment_to_pt(vec[i], a, b);
 		Line ln = Line(a, b);
-		if (abs(ln.a*Shpuntik.x + ln.b*Shpuntik.y + ln.c) < EPS)
+		if (abs(ln.a*Shpuntik.x + ln.b*Shpuntik.y + ln.c) < EPS) //|| Shpuntik.x == vec[i].first_pt.x && Shpuntik.y == vec[i].first_pt.y || Vintik.x == vec[i].second_pt.x && Vintik.y == vec[i].second_pt.y)
 			vec[i].intersections.push_back(crosses.size() - 1);
 	}
 }
@@ -233,7 +232,7 @@ void create_graph(vector <Road> &vec, vector<vector<int>> &g) {
 	for (int i = 0; i < vec.size();++i) {
 		if (!vec[i].intersections.size())
 			continue;
-		for (int j = 0; j < vec[i].intersections.size() - 1;++j) {
+		for (int j = 0; j < vec[i].intersections.size() - 1;j++) {
 			int v = vec[i].intersections[j];
 			int to = vec[i].intersections[j + 1];
 			g[v].push_back(to);

@@ -1,3 +1,9 @@
-﻿  LINK : не найден или не выполнена сборка E:\Git\graphs\Lab5\Debug\Lab5.exe при последней инкрементной компоновке; выполняется полная компоновка
+﻿  Source.cpp
+e:\git\graphs\lab5\lab5\source.cpp(188): warning C4018: <: несоответствие типов со знаком и без знака
+e:\git\graphs\lab5\lab5\source.cpp(190): warning C4018: <: несоответствие типов со знаком и без знака
+e:\git\graphs\lab5\lab5\source.cpp(223): warning C4018: <: несоответствие типов со знаком и без знака
+e:\git\graphs\lab5\lab5\source.cpp(232): warning C4018: <: несоответствие типов со знаком и без знака
+e:\git\graphs\lab5\lab5\source.cpp(235): warning C4018: <: несоответствие типов со знаком и без знака
+e:\git\graphs\lab5\lab5\source.cpp(266): warning C4018: <: несоответствие типов со знаком и без знака
   Lab5.vcxproj -> E:\Git\graphs\Lab5\Debug\Lab5.exe
   Lab5.vcxproj -> E:\Git\graphs\Lab5\Debug\Lab5.pdb (Full PDB)
