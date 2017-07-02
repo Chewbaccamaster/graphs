@@ -67,7 +67,6 @@ vector<pt> cross_vector;
 vector<Road> v;
 map <pt, int> cross_list;
 pt Vintik, Shpuntik;
-
 vector < vector<int>>  g;
 
 void create_vector(vector<Road> &vec) {
@@ -255,7 +254,7 @@ struct ACP { // AngleCurrentPred
 		return (angle < p.angle - EPS);
 	}
 };
-double dijkstra(const vector<pt> &crosses, vector<vector<int>> &g, int start, int end) {
+double dijkstra(const vector<pt> &crosses, vector<vector<int>> &g, int &start, int &end) {
 	int n = g.size();
 	vector<double> d(n, INF);
 	d[start] = 0.0;
@@ -326,7 +325,9 @@ int main() {
 
 	create_graph(v, adj);
 
-	result = dijkstra(cross_vector, adj, cross_vector.size() - 2, cross_list.size() - 1);
+	int start = cross_vector.size() - 2;
+	int end = cross_vector.size() - 1;
+	result = dijkstra(cross_vector, adj, start, end);
 
 	fout << result;
 
