@@ -260,7 +260,11 @@ double dijkstra(const vector<pt> &crosses, vector<vector<int>> &g, int &start, i
 	vector<double> d(n, INF);
 	d[start] = 0.0;
 	priority_queue < ACP> q;
-	q.push(ACP(0.0, start, -1));
+//	q.push(ACP(0.0, start, -1));
+	for (auto to : g[start]) {
+		d[to] = 0;
+		q.push(ACP(0, to, start));
+	}
 	while (!q.empty()) {
 		ACP state = q.top();
 		q.pop();
@@ -273,19 +277,18 @@ double dijkstra(const vector<pt> &crosses, vector<vector<int>> &g, int &start, i
 				continue;
 
 			double angle;
-			if (state.pred == -1)
-				angle = 0.0;
-			else {
+			
+			
 				pt pt1, pt2, pt3, pt4;
 				pt1 = crosses[state.pred];
 				pt2 = crosses[state.current];
 				pt3 = crosses[to];
 				angle = count_angle(pt1, pt2, pt2, pt3);
-			}
+			
 
-			if (d[v] + angle < d[to] + 180.0) {
+			if (d[v] + angle < d[to]) {
 				d[to] = d[v] + angle;
-				q.push(ACP(d[to], to, v));
+				q.push(ACP(-d[to], to, v));
 				
 			}
 		}
