@@ -150,7 +150,7 @@ double count_angle(pt &a, pt &b, pt &c, pt &d) {
 	Line ln1 = Line(a, b), ln2 = Line(c, d);
 
 	double angle = (ln1.a*ln2.a + ln1.b*ln2.b) / ((sqrt(ln1.a*ln1.a + ln1.b*ln1.b))*sqrt(ln2.a*ln2.a + ln2.b*ln2.b));
-	if (abs(angle - 1.0) < EPS)
+	if (abs(abs(angle) - 1.0) < EPS)
 		return 0.0;
 	if (abs(angle) < EPS)
 		return 90.0;
@@ -199,7 +199,7 @@ void create_start_end_crosses(vector<Road> &vec, map<pt, int> &crosses) {
 		pt a, b;
 		convert_from_segment_to_pt(vec[i], a, b);
 		Line ln = Line(a, b);
-		if ((abs(ln.a*Vintik.x + ln.b*Vintik.y + ln.c) < EPS) && betw(a.x,b.x,Vintik.x) && betw(a.y,b.y,Vintik.y)) //|| Vintik.x==vec[i].first_pt.x && Vintik.y==vec[i].first_pt.y || Vintik.x == vec[i].second_pt.x && Vintik.y == vec[i].second_pt.y)
+		if ((abs(ln.a*Vintik.x + ln.b*Vintik.y + ln.c) < EPS) && betw(a.x, b.x, Vintik.x) && betw(a.y, b.y, Vintik.y)) //|| Vintik.x==vec[i].first_pt.x && Vintik.y==vec[i].first_pt.y || Vintik.x == vec[i].second_pt.x && Vintik.y == vec[i].second_pt.y)
 			vec[i].intersections.push_back(crosses.size() - 1);
 	}
 
@@ -208,7 +208,7 @@ void create_start_end_crosses(vector<Road> &vec, map<pt, int> &crosses) {
 		pt a, b;
 		convert_from_segment_to_pt(vec[i], a, b);
 		Line ln = Line(a, b);
-		if ((abs(ln.a*Shpuntik.x + ln.b*Shpuntik.y + ln.c) < EPS) && betw(a.x,b.x,Shpuntik.x) && betw(a.y,b.y,Shpuntik.y)) //|| Shpuntik.x == vec[i].first_pt.x && Shpuntik.y == vec[i].first_pt.y || Vintik.x == vec[i].second_pt.x && Vintik.y == vec[i].second_pt.y)
+		if ((abs(ln.a*Shpuntik.x + ln.b*Shpuntik.y + ln.c) < EPS) && betw(a.x, b.x, Shpuntik.x) && betw(a.y, b.y, Shpuntik.y)) //|| Shpuntik.x == vec[i].first_pt.x && Shpuntik.y == vec[i].first_pt.y || Vintik.x == vec[i].second_pt.x && Vintik.y == vec[i].second_pt.y)
 			vec[i].intersections.push_back(crosses.size() - 1);
 	}
 }
@@ -257,6 +257,7 @@ struct ACP { // AngleCurrentPred
 		return (angle < p.angle - EPS);
 	}
 };
+
 double dijkstra(const vector<pt> &crosses, vector<vector<int>> &g, int &start, int &end) {
 	int n = g.size();
 	vector<double> d(n, INF);
