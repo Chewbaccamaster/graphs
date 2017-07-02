@@ -9,7 +9,7 @@ using namespace std;
 
 const double Pi = atan(1) * 4;
 const double EPS = 1E-9;
-#define INF 1e9
+#define INF 1e6
 
 ifstream fin("input.txt");
 ofstream fout("output.txt");
@@ -24,9 +24,6 @@ struct pt {
 	}
 	bool operator< (const pt & p) const {
 		return (x < p.x - EPS) || ((abs(x - p.x) < EPS) && (y < p.y - EPS));
-	}
-	bool operator== (const pt &p) const {
-		return (abs(p.x - x) < EPS) && (abs(p.y - y) < EPS);
 	}
 };
 
@@ -220,7 +217,7 @@ void convert_from_map_to_cross_vector(map<pt, int> &crosses, vector<pt> &interse
 	}
 }
 
-void sort_roads_intersections(vector<Road> &vec, vector<pt> crosses_vector) {
+void sort_roads_intersections(vector<Road> &vec, vector<pt> &crosses_vector) {
 	for (int i = 0;i < vec.size();++i) {
 		sort(vec[i].intersections.begin(), vec[i].intersections.end(), [&](int a, int b) {
 			return (crosses_vector[a] < crosses_vector[b]);
