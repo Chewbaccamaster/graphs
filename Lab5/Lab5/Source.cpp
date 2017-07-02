@@ -199,7 +199,7 @@ void create_start_end_crosses(vector<Road> &vec, map<pt, int> &crosses) {
 		pt a, b;
 		convert_from_segment_to_pt(vec[i], a, b);
 		Line ln = Line(a, b);
-		if (abs(ln.a*Vintik.x + ln.b*Vintik.y + ln.c) < EPS) //|| Vintik.x==vec[i].first_pt.x && Vintik.y==vec[i].first_pt.y || Vintik.x == vec[i].second_pt.x && Vintik.y == vec[i].second_pt.y)
+		if ((abs(ln.a*Vintik.x + ln.b*Vintik.y + ln.c) < EPS) && betw(a.x,b.x,Vintik.x) && betw(a.y,b.y,Vintik.y)) //|| Vintik.x==vec[i].first_pt.x && Vintik.y==vec[i].first_pt.y || Vintik.x == vec[i].second_pt.x && Vintik.y == vec[i].second_pt.y)
 			vec[i].intersections.push_back(crosses.size() - 1);
 	}
 
@@ -208,7 +208,7 @@ void create_start_end_crosses(vector<Road> &vec, map<pt, int> &crosses) {
 		pt a, b;
 		convert_from_segment_to_pt(vec[i], a, b);
 		Line ln = Line(a, b);
-		if (abs(ln.a*Shpuntik.x + ln.b*Shpuntik.y + ln.c) < EPS) //|| Shpuntik.x == vec[i].first_pt.x && Shpuntik.y == vec[i].first_pt.y || Vintik.x == vec[i].second_pt.x && Vintik.y == vec[i].second_pt.y)
+		if ((abs(ln.a*Shpuntik.x + ln.b*Shpuntik.y + ln.c) < EPS) && betw(a.x,b.x,Shpuntik.x) && betw(a.y,b.y,Shpuntik.y)) //|| Shpuntik.x == vec[i].first_pt.x && Shpuntik.y == vec[i].first_pt.y || Vintik.x == vec[i].second_pt.x && Vintik.y == vec[i].second_pt.y)
 			vec[i].intersections.push_back(crosses.size() - 1);
 	}
 }
@@ -269,6 +269,7 @@ double dijkstra(const vector<pt> &crosses, vector<vector<int>> &g, int &start, i
 		int v = state.current;
 
 		for (size_t j = 0; j < g[v].size(); ++j) {
+
 			int to = g[v][j];
 			if (to == state.pred)
 				continue;
@@ -283,6 +284,7 @@ double dijkstra(const vector<pt> &crosses, vector<vector<int>> &g, int &start, i
 				pt3 = crosses[to];
 				angle = count_angle(pt1, pt2, pt2, pt3);
 			}
+
 			if (d[v] + angle < d[to] + 180.0) {
 				d[to] = d[v] + angle;
 				q.push(ACP(d[to], to, v));
