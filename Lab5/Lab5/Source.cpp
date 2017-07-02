@@ -311,9 +311,7 @@ int main() {
 
 	create_vector(v);
 
-	find_intersections(v, cross_list);
-
-	
+	find_intersections(v, cross_list);	
 
 	create_start_end_crosses(v, cross_list);
 
