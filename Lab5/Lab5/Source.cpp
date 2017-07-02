@@ -25,6 +25,9 @@ struct pt {
 	bool operator< (const pt & p) const {
 		return (x < p.x - EPS) || ((abs(x - p.x) < EPS) && (y < p.y - EPS));
 	}
+	bool operator== (const pt &p) const {
+		return (abs(p.x - x) < EPS) && (abs(p.y - y) < EPS);
+	}
 };
 
 struct Line {
