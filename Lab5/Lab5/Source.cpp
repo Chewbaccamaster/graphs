@@ -9,7 +9,7 @@ using namespace std;
 
 const double Pi = atan(1) * 4;
 const double EPS = 1E-9;
-#define INF 2e9
+#define INF 1e9
 
 ifstream fin("input.txt");
 ofstream fout("output.txt");
@@ -23,7 +23,7 @@ struct pt {
 		y = b;
 	}
 	bool operator< (const pt & p) const {
-		return x < p.x - EPS || abs(x - p.x) < EPS && y < p.y - EPS;
+		return (x < p.x - EPS) || ((abs(x - p.x) < EPS) && (y < p.y - EPS));
 	}
 };
 
@@ -68,7 +68,7 @@ vector<Road> v;
 map <pt, int> cross_list;
 pt Vintik, Shpuntik;
 
-vector < pair<double, pair<int, int>>> g;
+vector < vector<int>>  g;
 
 void create_vector(vector<Road> &vec) {
 	int N;
@@ -79,9 +79,9 @@ void create_vector(vector<Road> &vec) {
 		fin >> x1 >> y1 >> x2 >> y2;
 
 
-	/*	if (x1 > x2) {
-			swap(x1, x2);
-			swap(y1, y2);
+		/*	if (x1 > x2) {
+		swap(x1, x2);
+		swap(y1, y2);
 		}*/
 		road = Road(x1, y1, x2, y2);
 		// (x1,y1)  (x2,y2)
@@ -148,28 +148,27 @@ double count_angle(pt &a, pt &b, pt &c, pt &d) {
 	Line ln1 = Line(a, b), ln2 = Line(c, d);
 
 	double angle = (ln1.a*ln2.a + ln1.b*ln2.b) / ((sqrt(ln1.a*ln1.a + ln1.b*ln1.b))*sqrt(ln2.a*ln2.a + ln2.b*ln2.b));
-	if (abs(angle-1.0)<EPS)
-		angle = 1.0;
-	double result = acos(angle) / Pi*180.0;
-	if (abs(result - 180.0) < EPS)
-		return INF;
-	else return result;
+	if (abs(angle - 1.0) < EPS)
+		return 0.0;
+	if (abs(angle) < EPS)
+		return 90.0;
+	return acos(angle) / Pi*180.0;
 }
 
 void find_intersections(vector<Road> &vec, map <pt, int> &crosses) {
 	int n = vec.size();
 	int cnt = 0;
 	for (int i = 0;i < n;++i) {
-		
+
 		for (int j = i + 1;j < n;++j) {
-			
+
 			pt a, b, c, d, cross_point;
 			convert_from_segment_to_pt(vec[i], a, b);
 			convert_from_segment_to_pt(vec[j], c, d);
 			if (intersect(a, b, c, d, cross_point)) {
 				auto temp = crosses.find(cross_point);
 				if (temp == crosses.end()) {
-					crosses.emplace(make_pair(cross_point, cnt));
+					crosses.emplace(cross_point, cnt);
 					vec[i].intersections.push_back(cnt);
 					vec[j].intersections.push_back(cnt);
 					cnt++;
@@ -193,7 +192,7 @@ void delete_same_crosses(vector<Road> &vec) {
 
 void create_start_end_crosses(vector<Road> &vec, map<pt, int> &crosses) {
 
-	crosses.emplace(Vintik, crosses.size());
+	crosses.emplace(Vintik, (int)crosses.size());
 	for (size_t i = 0; i < vec.size(); ++i) {
 		pt a, b;
 		convert_from_segment_to_pt(vec[i], a, b);
@@ -202,7 +201,7 @@ void create_start_end_crosses(vector<Road> &vec, map<pt, int> &crosses) {
 			vec[i].intersections.push_back(crosses.size() - 1);
 	}
 
-	crosses.emplace(Shpuntik, crosses.size());
+	crosses.emplace(Shpuntik, (int)crosses.size());
 	for (size_t i = 0; i < vec.size(); ++i) {
 		pt a, b;
 		convert_from_segment_to_pt(vec[i], a, b);
@@ -227,11 +226,13 @@ void sort_roads_intersections(vector<Road> &vec, vector<pt> crosses_vector) {
 	}
 }
 
+
 void create_graph(vector <Road> &vec, vector<vector<int>> &g) {
 	g.resize(cross_list.size());
+
 	for (int i = 0; i < vec.size();++i) {
-		if (!vec[i].intersections.size())
-			continue;
+			if (!vec[i].intersections.size())
+				continue;
 		for (int j = 0; j < vec[i].intersections.size() - 1;j++) {
 			int v = vec[i].intersections[j];
 			int to = vec[i].intersections[j + 1];
@@ -241,59 +242,56 @@ void create_graph(vector <Road> &vec, vector<vector<int>> &g) {
 	}
 }
 
-double dijkstra(const vector<pt> &crosses, vector<vector<int>> &g, int start, int end) {
-	int n = crosses.size();
-	vector<vector<double>> d(n, vector<double>(n, INF));
-	vector<vector<bool>> used(n, vector<bool>(n, false));
-	priority_queue<pair<double, pair<int, int>>> q;
-
-	for (auto road : g[start]) {
-		d[road][start] = 0.0;
-		q.emplace(0.0, make_pair(start, road));
+struct ACP { // AngleCurrentPred
+	double angle;
+	int current;
+	int pred;
+	ACP(double a, int b, int c) {
+		angle = a;
+		current = b;
+		pred = c;
 	}
-
+	bool operator< (const ACP & p) const {
+		return (angle < p.angle - EPS);
+	}
+};
+double dijkstra(const vector<pt> &crosses, vector<vector<int>> &g, int start, int end) {
+	int n = g.size();
+	vector<double> d(n, INF);
+	d[start] = 0.0;
+	priority_queue < ACP> q;
+	q.push(ACP(0.0, start, -1));
 	while (!q.empty()) {
-		pair<double, pair<int, int>> v = q.top();
+		ACP state = q.top();
 		q.pop();
+		int v = state.current;
 
-		pair<int, int> road = v.second;
-		if (used[road.second][road.first]) //if try to go reverse
-			continue;
-
-		used[road.first][road.second] = true;
-		used[road.second][road.first] = true;
-
-		for (int j = 0; j < g[road.second].size();++j) {
-			int to = g[road.second][j];
-
-			if (to == road.first)
+		for (size_t j = 0; j < g[v].size(); ++j) {
+			int to = g[v][j];
+			if (to == state.pred)
 				continue;
 
-			if (used[road.second][to])
-				continue;
-
-			pt pt1, pt2, pt3, pt4;
-			pt1 = crosses[road.first];
-			pt2 = crosses[road.second];
-			pt3 = crosses[road.second];
-			pt4 = crosses[to];
-
-			double angle = count_angle(pt1, pt2, pt3, pt4);
-			double temp = d[road.second][road.first] + angle;
-			double& tempdistance = d[to][road.second];
-
-			if (tempdistance > temp) {
-				tempdistance = temp;
-				q.emplace(-tempdistance, make_pair(road.second, to));
+			double angle;
+			if (state.pred == -1)
+				angle = 0.0;
+			else {
+				pt pt1, pt2, pt3, pt4;
+				pt1 = crosses[state.pred];
+				pt2 = crosses[state.current];
+				pt3 = crosses[to];
+				angle = count_angle(pt1, pt2, pt2, pt3);
 			}
-
+			if (d[v] + angle < d[to] + 180.0) {
+				d[to] = d[v] + angle;
+				q.push(ACP(d[to], to, v));
+				
+			}
 		}
 	}
-	double result = *min_element(d[end].begin(), d[end].end());
-	if (result < INF)
-		return result;
-	else return -1;
 
+	if (d[end] == INF)
+		return -1;
+	else return d[end];
 }
 
 void print_roads() {
@@ -316,13 +314,15 @@ int main() {
 
 	find_intersections(v, cross_list);
 
+	
+
 	create_start_end_crosses(v, cross_list);
 
 	delete_same_crosses(v);
 
 	convert_from_map_to_cross_vector(cross_list, cross_vector);
 
-	sort_roads_intersections(v, cross_vector);
+	//sort_roads_intersections(v, cross_vector);
 
 	create_graph(v, adj);
 
@@ -332,13 +332,13 @@ int main() {
 
 	fout.close();
 
-/*	pt a, b;
+	/*	pt a, b;
 	convert_from_segment_to_pt(v[22], a, b);
 	Line ln = Line(a, b);
 	abs(ln.a*Shpuntik.x + ln.b*Shpuntik.y + ln.c);
 	//print_roads();
 
 	//cout << endl;*/
-		return EXIT_SUCCESS;
+	return EXIT_SUCCESS;
 
 }
